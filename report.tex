@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\title{The Hall Effect}
+\date{\today}
+\author{Alexander Seaton}
+
+\begin{document}
+	\maketitle
+	\begin{abstract}
+		
+	\end{abstract}
+	\section{Introduction}
+	
+	\section{Experimental Method}
+		Data was taken in runs where one independent variable was held fixed and the other varied. For example if $I$ was held fixed, $B$ would be varied. The varied independent variable was not necessarily selected to be symmetric about zero, however runs were taken for symmetric values of the fixed independent variable. To eliminate the systematic errors due to misalignment and the Nernst, Ettinghausen and Righi-Leduc effects, data from the four quadrants of $(I,V)$ parameter space needs to be combined as follows:
+		
+		\begin{equation} \label{eq:removeErrors}
+			V_H(B,I) = \frac{V(+B,+I)-V(+B,-I)+V(-B,-I)-V(-B,+I)}{4}
+		\end{equation}
+		
+		\noindent Since the data set is not symmetrically spaced with respect to the varied independent variable (for example if we are holding B constant and varying I, then we require points to be taken at -I for all positive I measured), the following procedure was followed to calculate the Hall coefficient:
+		
+		\begin{enumerate}
+			\item For all the data points, $V_i(B_i,I_i)$ perform the transformations:
+			\[B'_i = |B_i| \qquad V'_i = V_i\frac{B_iI_i}{|B_iI_i|}\]
+			\item Fit a quadratic to the data for which the varied independent variable is positive using least squares algorithm, giving the coefficients $\boldsymbol{\beta}$ and corresponding covariance matrix $\boldsymbol{\Sigma}^\beta$. This is justified as all data series are either linear or have slight curvature which is well approximated by the quadratic term - the data is not misrepresented in this way.
+			\item Repeat for all runs and also for the sections of the runs where the varied independent variable is negative. Now have a set of coefficients $\boldsymbol{\beta}_i$ and covariance matrices $\boldsymbol{\Sigma}^\beta_i$.
+			\item Due to the transformations performed on the data, $V_H$ is now the mean of the quantities in equation \ref{eq:removeErrors}. Since the quadratic equation is linear in the coefficients, the corrected $V_H$ for a particular value of the fixed independent variable may be written as a quadratic equation with coefficients calculated from the list of corresponding coefficient vectors:
+			\[ \boldsymbol{\beta}_\mu = \frac{\sum\boldsymbol{\beta}_i}{N} \]
+		\end{enumerate}
+		
+		\noindent Subsequently, $V_H(B,I)$ needs to be fitted to the theoretical prediction of the Hall voltage by varying the Hall coefficient $R_H$. To do this we calculate a goodness of fit value as a function of the Hall coefficient, $G(R_H)$. This is done by integrating the squared difference between the theoretical function and each corrected quadratic:
+		
+		\[ G(R_H) = \sum_j\int_{x_0}^{x_1}\frac{1}{\sigma(x)^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx \]
+		\begin{center}\emph{Where $x$ represents the varied independent variable, $y_j$ represent the different independent variables held constant and $\sigma(x)$ is the standard expected error of the quadratic at $x$.}\end{center}
+		
+		\noindent Crucially, since the corrected quadratics are derived from data in a certain region of the parameter space ($x$ ranging from $x_0$ to $x_1$), it is only valid to integrate over that region.
+		
+		We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. This was performed numerically using the Nelder-Mead method operating on the modified function $\mathcal{G}(R'_H) = \log(G(\log(R_H))$. This was done as $R_H$ spans many orders of magnitude for different materials.
+		
+\end{document}
