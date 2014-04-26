@@ -26,6 +26,21 @@ plt.rc('figure', figsize=(widthInches,heightInches))
 correctedDirectory = r'./correctedGraphs/'
 fitnessDirectory = r'./fitnessGraphs/'
 
+# Finds bounds on a quadratic given its coefficients and standard errors
+def quadraticCurveBounds(coefficients,coeffErrors,xVals):
+	yVals = [ coefficients[0]*x**2 + coefficients[1]*x + coefficients[2] for x in xVals ]
+	yMaxVals = list(yVals)
+	yMinVals = list(yVals)
+	for i in range(len(xVals)):
+		if(xVals[i] >= 0.0):
+			yMaxVals[i] += coeffErrors[0]*xVals[i]**2 + coeffErrors[1]*xVals[i] + coeffErrors[2]
+			yMinVals[i] -= coeffErrors[0]*xVals[i]**2 + coeffErrors[1]*xVals[i] + coeffErrors[2]
+		else:
+			yMaxVals[i] += coeffErrors[0]*xVals[i]**2 - coeffErrors[1]*xVals[i] + coeffErrors[2]
+			yMinVals[i] -= coeffErrors[0]*xVals[i]**2 - coeffErrors[1]*xVals[i] + coeffErrors[2]
+	
+	return yVals,yMinVals,yMaxVals
+
 # Finds xs in a list of x values with negative and positive signs
 def separateSigns(X):
 	positiveStart = None
@@ -96,9 +111,11 @@ def findRuns(Y,Yerr):
 def fitQuadraticsToSurface(A,groupDataList):
 	totalError = 0.0
 	for group in groupDataList:
-		#totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - A*x*group[2])**2,0.0,group[3])[0]
-		totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - A*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
+		#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - A*x*group[2])**2,0.0,group[3])[0]
+		#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - A*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
+		totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - A*x*group[2])**2/group[4]**2,0.0,group[3])[0]
 	
+	totalError *= 1.0/len(groupDataList)
 	return totalError
 
 # Runs done in constant Y
@@ -183,10 +200,12 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	groupCoefficientErrorsList = []
 	groupYValueList = []
 	groupMaxXList = []
+	groupErrorZList = []
 	for group in groupedRuns:
 		groupCoefficients = []
 		groupCoefficientErrors = []
 		groupYValues = []
+		groupErrorZ = 0.0
 		maxX = 0
 		
 		for run in group:
@@ -202,6 +221,7 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 				maxX = max(transformedRun[0])
 			
 			groupYValues.append(list(transformedRun[1]))
+			groupErrorZ = max(list(transformedRun[5]) + [groupErrorZ])
 			
 			# For numpy.polyfit the weights are 1/sigma, where sigma is standard deviation
 			# Feed logged values into the fitting function to get coefficients and weirdly scaled covariance matrix
@@ -224,50 +244,94 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 		groupCoefficientErrorsList.append([ math.sqrt(np.sum(np.power(e,2)))/len(e) for e in zip(*groupCoefficientErrors) ])
 		groupYValueList.append(np.mean([item for sublist in groupYValues for item in sublist]))
 		groupMaxXList.append(maxX)
+		groupErrorZList.append(groupErrorZ/math.sqrt(len(group)))
 	
-	for g in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList):
+	for g in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
 		print '\nFor group with |Y| = ' + str(g[2]) + ':'
 		print ' - Coefficients are:\n' + str(g[0])
 		print ' - Coefficient errors are:\n' + str(g[1])
 		print ' - Maximum X values are: ' + str(g[3])
+		print ' - Standard error is: ' + str(g[4])
 	
-	groupDataList = zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList)
+	groupDataList = zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList)
 	positiveResult = minimize(lambda x: math.log10(fitQuadraticsToSurface(math.pow(10.0,x),groupDataList)), -1.0, method='nelder-mead')
 	negativeResult = minimize(lambda x: math.log10(fitQuadraticsToSurface(-math.pow(10.0,x),groupDataList)),-1.0, method='nelder-mead')
 	print 'Positive fit result: ' + str(positiveResult)
 	print 'Negative fit result: ' + str(negativeResult)
 	
-	rValues = np.logspace(-15,2,1000)
+	rValues = np.logspace(-8,2,1000)
 	totalErrors = []
 	for r in rValues:
 		totalError = 0.0
-		for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList):
-			totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
-			#totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2,0.0,group[3])[0]
-			
+		for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
+			totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/group[4]**2,0.0,group[3])[0]
+			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
+			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2,0.0,group[3])[0]
+		
+		totalError *= 1.0/len(zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList))
 		totalErrors.append(totalError)
 	
 	# Plot positive coefficient fit result
-	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList):
+	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
-		ax.plot(np.linspace(0.0,group[3]),[ math.pow(10.0,positiveResult['x'][0])*x*group[2] for x in np.linspace(0.0,group[3]) ],'g-')
-		ax.plot(np.linspace(0.0,group[3]),[ group[0][0]*x**2 + group[0][1]*x + group[0][2] for x in np.linspace(0.0,group[3]) ],'b-')
-		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' /' + str(YUnit))
+		xSpace = np.linspace(0.0,group[3])
+		yValsEmpirical,yMinVals,yMaxVals = quadraticCurveBounds(group[0],np.multiply(1e4,group[1]),xSpace)
+		yMinVals = [ y-group[4] for y in yValsEmpirical ]
+		yMaxVals = [ y+group[4] for y in yValsEmpirical ]
+		yValsTheoretical = [ math.pow(10.0,positiveResult['x'][0])*x*group[2] for x in xSpace ]
+		if(max([ abs(y) for y in yValsEmpirical]) < 1e-3):
+			yValsEmpirical = np.multiply(yValsEmpirical,1e6)
+			yMinVals = np.multiply(yMinVals,1e6)
+			yMaxVals = np.multiply(yMaxVals,1e6)
+			yValsTheoretical = np.multiply(yValsTheoretical,1e6)
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
+		elif(max([ abs(y) for y in yValsEmpirical]) < 1.0):
+			yValsEmpirical = np.multiply(yValsEmpirical,1e3)
+			yMinVals = np.multiply(yMinVals,1e3)
+			yMaxVals = np.multiply(yMaxVals,1e3)
+			yValsTheoretical = np.multiply(yValsTheoretical,1e3)
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\milli\volt}')
+		else:
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\volt}')
+		ax.plot(xSpace,yValsTheoretical,'g-')
+		ax.plot(xSpace,yValsEmpirical,'b-')
+		ax.fill_between(xSpace, yMinVals, yMaxVals, facecolor='yellow',alpha=0.5,linestyle='--')
+		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' ' + str(YUnit))
 		ax.set_xlabel(str(XQuantity) + ' /' + str(XUnit))
-		ax.set_ylabel('Hall Voltage /V')
+		ax.set_xlim(0.0,group[3])
 		ax.grid()
 		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '_positive.pdf')
 		
 	# Plot negative coefficient fit result
-	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList):
+	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
-		ax.plot(np.linspace(0.0,group[3]),[ -math.pow(10.0,negativeResult['x'][0])*x*group[2] for x in np.linspace(0.0,group[3]) ],'g-')
-		ax.plot(np.linspace(0.0,group[3]),[ group[0][0]*x**2 + group[0][1]*x + group[0][2] for x in np.linspace(0.0,group[3]) ],'b-')
-		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' /' + str(YUnit))
+		xSpace = np.linspace(0.0,group[3])
+		yValsEmpirical,yMinVals,yMaxVals = quadraticCurveBounds(group[0],np.multiply(1e4,group[1]),xSpace)
+		yMinVals = [ y-group[4] for y in yValsEmpirical ]
+		yMaxVals = [ y+group[4] for y in yValsEmpirical ]
+		yValsTheoretical = [ -math.pow(10.0,negativeResult['x'][0])*x*group[2] for x in xSpace ]
+		if(max([ abs(y) for y in yValsEmpirical]) < 1e-3):
+			yValsEmpirical = np.multiply(yValsEmpirical,1e6)
+			yMinVals = np.multiply(yMinVals,1e6)
+			yMaxVals = np.multiply(yMaxVals,1e6)
+			yValsTheoretical = np.multiply(yValsTheoretical,1e6)
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
+		elif(max([ abs(y) for y in yValsEmpirical]) < 1.0):
+			yValsEmpirical = np.multiply(yValsEmpirical,1e3)
+			yMinVals = np.multiply(yMinVals,1e3)
+			yMaxVals = np.multiply(yMaxVals,1e3)
+			yValsTheoretical = np.multiply(yValsTheoretical,1e3)
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\milli\volt}')
+		else:
+			ax.set_ylabel(r'Hall Voltage /\SI{}{\volt}')
+		ax.plot(xSpace,yValsTheoretical,'g-')
+		ax.plot(xSpace,yValsEmpirical,'b-')
+		ax.fill_between(xSpace, yMinVals, yMaxVals, facecolor='yellow',alpha=0.5,linestyle='--')
+		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' ' + str(YUnit))
 		ax.set_xlabel(str(XQuantity) + ' /' + str(XUnit))
-		ax.set_ylabel('Hall Voltage /V')
+		ax.set_xlim(0.0,group[3])
 		ax.grid()
 		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '_negative.pdf')
 	
@@ -279,19 +343,21 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	ax = plt.axes()
 	ax.set_xscale('log')
 	ax.set_yscale('log')
-	ax.set_xlabel('$R_H/t$')
+	ax.set_xlabel(r'$R_H/t$ /\SI{}{\square\metre\per\coulomb}')
 	ax.set_ylabel('Integral of squared errors',rotation=90)
 	ax.grid()
 	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors_positive.pdf')
 	
-	rValuesNegative = np.dot(-1.0,np.logspace(-15,2,1000))
+	rValuesNegative = np.dot(-1.0,np.logspace(-8,2,1000))
 	totalErrors = []
 	for r in rValuesNegative:
 		totalError = 0.0
-		for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList):
-			totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
-			#totalError += integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2,0.0,group[3])[0]
+		for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
+			totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/group[4]**2,0.0,group[3])[0]
+			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
+			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2,0.0,group[3])[0]
 		
+		totalError *= 1.0/len(zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList))
 		totalErrors.append(totalError)
 	
 	# Plot negative coefficient errors vs. R_H
@@ -302,7 +368,7 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	ax = plt.axes()
 	ax.set_xscale('log')
 	ax.set_yscale('log')
-	ax.set_xlabel('$-R_H/t$')
+	ax.set_xlabel(r'$-R_H/t$ /\SI{}{\square\metre\per\coulomb}')
 	ax.set_ylabel('Integral of squared errors',rotation=90)
 	ax.grid()
 	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors_negative.pdf')

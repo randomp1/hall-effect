@@ -21,6 +21,21 @@ heightInches = widthInches/1.61803398875
 plt.rc('figure', figsize=(widthInches,heightInches))
 outputFolder = r'./graphs_raw/'
 
+# Finds bounds on a quadratic given its coefficients and standard errors
+def quadraticCurveBounds(coefficients,coeffErrors,xVals):
+	yVals = [ coefficients[0]*x**2 + coefficients[1]*x + coefficients[2] for x in xVals ]
+	yMaxVals = list(yVals)
+	yMinVals = list(yVals)
+	for i in range(len(xVals)):
+		if(xVals[i] >= 0.0):
+			yMaxVals[i] += coeffErrors[0]*xVals[i]**2 + coeffErrors[1]*xVals[i] + coeffErrors[2]
+			yMinVals[i] -= coeffErrors[0]*xVals[i]**2 + coeffErrors[1]*xVals[i] + coeffErrors[2]
+		else:
+			yMaxVals[i] += coeffErrors[0]*xVals[i]**2 - coeffErrors[1]*xVals[i] + coeffErrors[2]
+			yMinVals[i] -= coeffErrors[0]*xVals[i]**2 - coeffErrors[1]*xVals[i] + coeffErrors[2]
+	
+	return yVals,yMinVals,yMaxVals
+
 # Finds xs in a list of x values with negative and positive signs
 def separateSigns(X):
 	positiveStart = None
@@ -88,6 +103,23 @@ def findRuns(Y,Yerr):
 	
 	return runIndices
 
+# Wrapper to polyfit
+def getCoeffsAndCovMatrix(X,Y,errY,degree):
+	# For numpy.polyfit the weights are 1/sigma, where sigma is standard deviation
+	# Feed logged values into the fitting function to get coefficients and weirdly scaled covariance matrix
+	fitResults = np.polyfit(x=X,y=Y,deg=degree,full=False,cov=True)
+	coefficients = fitResults[0]
+	covarianceMatrix = fitResults[-1]
+
+	# Do this again to get residuals - for some reason function won't return residuals AND covariance matrix
+	residuals = np.polyfit(x=X,y=Y,deg=degree,full=True,cov=False)[1][0]
+
+	# the covariance matrix we have currently is scaled by residuals/(len(xs)-(deg+1)-2.0)
+	# for some strange reason. Unscale it:
+	covarianceMatrix = np.multiply(residuals/(len(X)-(degree+1.0)-2.0),covarianceMatrix)
+	
+	return coefficients,covarianceMatrix
+
 # results in format: [ [B /T], [B error], [I /A], [I error], [T /C], [T error /C], [V /V], [V error /V] ]
 results = np.load('results.npz')
 
@@ -113,17 +145,21 @@ for run in pTypeGeRuns:
 	
 	negatives,positives = separateSigns(run[0])
 	if(positives[0] != None):
-		positiveCoefficients = np.polyfit(run[0][positives[0]:positives[1]],run[6][positives[0]:positives[1]],2)
+		positiveCoefficients,posCovMatrix = getCoeffsAndCovMatrix(run[0][positives[0]:positives[1]],run[6][positives[0]:positives[1]],run[7][positives[0]:positives[1]],2)
 		print 'Positive coefficients: ' + str(positiveCoefficients)
+		print 'Errors: ' + str([ math.sqrt(posCovMatrix[i][i]) for i in range(len(posCovMatrix)) ])
 		positiveSpace = np.linspace(0.0,ax.get_xlim()[1])
-		positiveValues = [ positiveCoefficients[0]*(x**2) + positiveCoefficients[1]*x + positiveCoefficients[2] for x in positiveSpace ]
+		positiveValues,posLowerBound,posUpperBound = quadraticCurveBounds(positiveCoefficients,[ math.sqrt(posCovMatrix[i][i]) for i in range(len(posCovMatrix)) ],positiveSpace)
 		ax.plot(positiveSpace,positiveValues,'g-')
+		#ax.fill_between(positiveSpace, posLowerBound, posUpperBound, facecolor='yellow',alpha=0.5,linestyle='--')
 	if(negatives[0] != None):
-		negativeCoefficients = np.polyfit(run[0][negatives[0]:negatives[1]],run[6][negatives[0]:negatives[1]],2)
+		negativeCoefficients,negCovMatrix = getCoeffsAndCovMatrix(run[0][negatives[0]:negatives[1]],run[6][negatives[0]:negatives[1]],run[7][negatives[0]:negatives[1]],2)
 		print 'Negative coefficients: ' + str(negativeCoefficients)
+		print 'Errors: ' + str([ math.sqrt(negCovMatrix[i][i]) for i in range(len(negCovMatrix)) ])
 		negativeSpace = np.linspace(ax.get_xlim()[0],0.0)
-		negativeValues = [ negativeCoefficients[0]*(x**2) + negativeCoefficients[1]*x + negativeCoefficients[2] for x in negativeSpace ]
+		negativeValues,negLowerBound,negUpperBound = quadraticCurveBounds(negativeCoefficients,[ math.sqrt(negCovMatrix[i][i]) for i in range(len(negCovMatrix)) ],negativeSpace)
 		ax.plot(negativeSpace,negativeValues,'r-')
+		#ax.fill_between(negativeSpace, negLowerBound, negUpperBound, facecolor='yellow',alpha=0.5,linestyle='--')
 	
 	ax.set_title('p-type Ge, I=' + str(run[2][0])[:6] + 'A')
 	ax.set_xlabel('B /T')

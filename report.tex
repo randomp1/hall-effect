@@ -11,9 +11,49 @@
 		
 	\end{abstract}
 	\section{Introduction}
-	
+		The Hall effect is the deviation in the path of an electrical current in a conductor due to an externally imposed magnetic field. It was first discovered by Edwin Hall in 1879, notably before the discovery of the electron in 1897 or indeed quantum mechanical models of the behaviour of electrons in solids. Since then it has proved extremely useful and has been used to measure the strength of magnetic fields and of the type and density of the electrical charge carriers in materials (especially semiconductors).
+		
+		The effect can be quantified by considering a rectangular block of material of thickness $t$ and width $w$ which is positioned such that its length and width are in the $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}}$ directions respectively. If a current is passed through the material in the $\hat{\mathbf{x}}$ direction and a magnetic field is imposed in the $\hat{\mathbf{z}}$ direction, then the charge carriers will experience a force according to $\mathbf{F}=\mathbf{B}\times\mathbf{v}$. This may be written in terms of the vectors' components as:
+		
+		\begin{equation}
+			F^B_y = B_zv_x
+		\end{equation}
+		
+		\noindent As a result of this force, a charge imbalance will develop in the $\hat{\mathbf{y}}$ direction with voltage $V_y=-E_yw$, where $E_y$ is the electric field in the $\hat{\mathbf{y}}$ direction. This in turn produces a force $F^E_y = qE_y$ where $q$ is the charge of the dominant carrier. If we assume that the resulting charge distribution is constant in time then the electrical and magnetic forces must exactly balance:
+		
+		\begin{equation}
+			F^B_y + F^E_y = 0
+		\end{equation}
+		
+		\begin{equation}
+			\Rightarrow B_zv_x = q\frac{V_y}{w}
+		\end{equation}
+		
+		\begin{equation}
+			\Rightarrow V_y = \frac{wB_zv_x}{q}
+		\end{equation}
+		
+		\noindent At this point we assume that the current flows according to the Drude model, and so $v_x = I_x/nwtq$, where $n$ is the number density of the dominant charge carrier. Thus we may write the above equation as:
+		
+		\begin{equation}
+			V_y = \frac{1}{nq}\frac{B_zI_x}{t}
+		\end{equation}
+		
+		\noindent The constant of proportionality that relates $V_y$ and $B_zI_x/t$ is known as the Hall coefficient, $R_H$ and in this case is:
+		
+		\begin{equation}
+			R_H = \frac{1}{nq}
+		\end{equation}
+		
+		\noindent There are two important points when considering this expression:
+		
+		\begin{itemize}
+			\item The dominant charge carrier's polarity can be observed in the sign of $R_H$.
+			\item $R_H$ varies as the reciprocal of the number density of the dominant charge carrier - thus for small carrier densities a larger effect will be seen. This is of particular importance in measuring the dopant concentration in semiconductors.
+		\end{itemize}
+		
 	\section{Experimental Method}
-		Data was taken in runs where one independent variable was held fixed and the other varied. For example if $I$ was held fixed, $B$ would be varied. The varied independent variable was not necessarily selected to be symmetric about zero, however runs were taken for symmetric values of the fixed independent variable. To eliminate the systematic errors due to misalignment and the Nernst, Ettinghausen and Righi-Leduc effects, data from the four quadrants of $(I,V)$ parameter space needs to be combined as follows:
+		Data was taken in runs where one independent variable was held fixed and the other varied. For example if $I$ was held fixed, $B$ would be varied and vice versa. The varied independent variable was not necessarily selected to be symmetric about zero, however runs were taken for symmetric values of the fixed independent variable. To eliminate the systematic errors due to misalignment and the Nernst, Ettinghausen and Righi-Leduc effects, data from the four quadrants of $(I,V)$ parameter space needs to be combined as follows:
 		
 		\begin{equation} \label{eq:removeErrors}
 			V_H(B,I) = \frac{V(+B,+I)-V(+B,-I)+V(-B,-I)-V(-B,+I)}{4}
@@ -23,20 +63,48 @@
 		
 		\begin{enumerate}
 			\item For all the data points, $V_i(B_i,I_i)$ perform the transformations:
-			\[B'_i = |B_i| \qquad V'_i = V_i\frac{B_iI_i}{|B_iI_i|}\]
-			\item Fit a quadratic to the data for which the varied independent variable is positive using least squares algorithm, giving the coefficients $\boldsymbol{\beta}$ and corresponding covariance matrix $\boldsymbol{\Sigma}^\beta$. This is justified as all data series are either linear or have slight curvature which is well approximated by the quadratic term - the data is not misrepresented in this way.
-			\item Repeat for all runs and also for the sections of the runs where the varied independent variable is negative. Now have a set of coefficients $\boldsymbol{\beta}_i$ and covariance matrices $\boldsymbol{\Sigma}^\beta_i$.
+			\[B'_i = |B_i| \qquad I'_i = |I_i| \qquad V'_i = V_i\frac{B_iI_i}{|B_iI_i|}\]
+			
+			\item Fit a quadratic to the data for which the varied independent variable is positive using least squares algorithm, giving the coefficients $\boldsymbol{\beta}$. This is justified as all data series are either linear or have slight curvature which is well approximated by the quadratic term - the data is not misrepresented in this way. We also assume that the error is constant for all $x$ and take it to be the maximum error recorded for a particular series.s
+			
+			\item Repeat for all runs and also for the sections of the runs where the varied independent variable is negative. Now have a set of coefficients $\boldsymbol{\beta}_i$.
+			
 			\item Due to the transformations performed on the data, $V_H$ is now the mean of the quantities in equation \ref{eq:removeErrors}. Since the quadratic equation is linear in the coefficients, the corrected $V_H$ for a particular value of the fixed independent variable may be written as a quadratic equation with coefficients calculated from the list of corresponding coefficient vectors:
 			\[ \boldsymbol{\beta}_\mu = \frac{\sum\boldsymbol{\beta}_i}{N} \]
+			
+			\noindent Similarly, we calculate the error ($\sigma_j$) in the combined quadratic using the standard error propagation formula for a linear combination of quantities.
+			
+			\item Subsequently, $V_H(B,I)$ needs to be fitted to the theoretical prediction of the Hall voltage by varying the Hall coefficient $R_H$. To do this we calculate a goodness of fit value as a function of the Hall coefficient, $G(R_H)$. A useful measure of goodness of fit is the reduced Chi-squared test statistic:
+			\begin{equation}
+				\chi^2_{\textrm{discrete}} = \frac{1}{N}\sum_{i=0}^{i=N}\frac{(O_i-E_i)^2}{\sigma_i^2} \rightarrow \chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
+			\end{equation}
+			\noindent However since we are dealing with a continuous set of `data points' this must be converted to a continuous form:
+			\begin{equation}
+				\chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
+			\end{equation}
+			
+			\noindent Thus the form of $G(R_H)$ becomes the following:
+			
+			\begin{equation}
+				G(R_H) = \frac{1}{N}\sum_j\frac{1}{x_j}\int_{0}^{x_j}\frac{1}{\sigma_j^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx
+			\end{equation}
+			\begin{center}\emph{Where $x$ represents the varied independent variable, $x_j$ is its maximum value measured, $y_j$ represent the different independent variables held constant and $\sigma_j$ is the expected standard error.}\end{center}
+			
+			\noindent Crucially, since the corrected quadratics are derived from data in a certain region of the parameter space ($x$ ranging from $0$ to $x_1$), it is only valid to integrate over that region.
+			
+			\item We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. This was performed numerically using the Nelder-Mead method operating on the modified function $\mathcal{G}(R'_H) = \log(G(\log(R_H))$. This was done as $R_H$ spans many orders of magnitude for different materials.
 		\end{enumerate}
-		
-		\noindent Subsequently, $V_H(B,I)$ needs to be fitted to the theoretical prediction of the Hall voltage by varying the Hall coefficient $R_H$. To do this we calculate a goodness of fit value as a function of the Hall coefficient, $G(R_H)$. This is done by integrating the squared difference between the theoretical function and each corrected quadratic:
-		
-		\[ G(R_H) = \sum_j\int_{x_0}^{x_1}\frac{1}{\sigma(x)^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx \]
-		\begin{center}\emph{Where $x$ represents the varied independent variable, $y_j$ represent the different independent variables held constant and $\sigma(x)$ is the standard expected error of the quadratic at $x$.}\end{center}
-		
-		\noindent Crucially, since the corrected quadratics are derived from data in a certain region of the parameter space ($x$ ranging from $x_0$ to $x_1$), it is only valid to integrate over that region.
-		
-		We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. This was performed numerically using the Nelder-Mead method operating on the modified function $\mathcal{G}(R'_H) = \log(G(\log(R_H))$. This was done as $R_H$ spans many orders of magnitude for different materials.
-		
+	
+	\section{Results and Discussion}
+	
+	\section{Conclusion}
+	
+	\newpage
+	\begin{thebibliography}{9}
+		\bibitem{hallPaper}
+			E. H. Hall,
+			\emph{On a New Action of the Magnet on Electric Currents},
+			American Journal of Mathematics, Vol 2, p.287-292
+			1879
+	\end{thebibliography}
 \end{document}
