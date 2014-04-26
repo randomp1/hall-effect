@@ -1,5 +1,9 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{siunitx}
+
+% Define superscript citation command
+\newcommand{\supercite}[1]{\textsuperscript{\cite{#1}}}
 
 \title{The Hall Effect}
 \date{\today}
@@ -8,34 +12,19 @@
 \begin{document}
 	\maketitle
 	\begin{abstract}
-		
+		The Hall constant of four different materials was measured: silver, tungsten, p-type and n-type germanium. This was achieved via the elimination of systematic errors caused by various effects. The constant was found to have values of $7.4\times10^{-11}\SI{}{\cubic\metre\per\coulomb}$, blah, $-6.9\times10^{-3}\SI{}{\cubic\metre\per\coulomb}$ and blah respectively. 
 	\end{abstract}
+	
+	
 	\section{Introduction}
-		The Hall effect is the deviation in the path of an electrical current in a conductor due to an externally imposed magnetic field. It was first discovered by Edwin Hall in 1879, notably before the discovery of the electron in 1897 or indeed quantum mechanical models of the behaviour of electrons in solids. Since then it has proved extremely useful and has been used to measure the strength of magnetic fields and of the type and density of the electrical charge carriers in materials (especially semiconductors).
+		The Hall effect is the deviation in the path of an electrical current in a conductor due to an externally imposed magnetic field, resulting in a voltage across the material. It was first discovered by Edwin Hall in 1879, notably before the discovery of the electron in 1897 or indeed quantum mechanical models of the behaviour of electrons in solids. Since then it has proved extremely useful and has been used to measure the strength of magnetic fields and of the type and density of the electrical charge carriers in materials (especially semiconductors).
 		
-		The effect can be quantified by considering a rectangular block of material of thickness $t$ and width $w$ which is positioned such that its length and width are in the $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}}$ directions respectively. If a current is passed through the material in the $\hat{\mathbf{x}}$ direction and a magnetic field is imposed in the $\hat{\mathbf{z}}$ direction, then the charge carriers will experience a force according to $\mathbf{F}=\mathbf{B}\times\mathbf{v}$. This may be written in terms of the vectors' components as:
+		In this experiment we sought to measure the constant of proportionality relating the Hall voltage and the magnetic field strength and current (the Hall constant) for four materials: silver, tungsten, p-type germanium and n-type germanium. To perform this accurately, various systematic errors needed to be removed, caused by effects described below.
 		
-		\begin{equation}
-			F^B_y = B_zv_x
-		\end{equation}
+	\section{Theoretical Considerations}
+		The Hall effect can be quantified by considering a rectangular block of material of thickness $t$ and width $w$ which is positioned such that its length and width are in the $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}}$ directions respectively. If a current is passed through the material in the $\hat{\mathbf{x}}$ direction and a magnetic field is imposed in the $\hat{\mathbf{z}}$ direction, then the charge carriers will experience a force causing them to move to one side of the material. This results in a build up of charge and so an opposing electric field which results in a voltage being produced across the width of the material in the $\hat{\mathbf{y}}$ direction that balances the force due to the magnetic field. With the assumption that the charge carriers conduct in the material according to the Drude model, the following equation is obtained:
 		
-		\noindent As a result of this force, a charge imbalance will develop in the $\hat{\mathbf{y}}$ direction with voltage $V_y=-E_yw$, where $E_y$ is the electric field in the $\hat{\mathbf{y}}$ direction. This in turn produces a force $F^E_y = qE_y$ where $q$ is the charge of the dominant carrier. If we assume that the resulting charge distribution is constant in time then the electrical and magnetic forces must exactly balance:
-		
-		\begin{equation}
-			F^B_y + F^E_y = 0
-		\end{equation}
-		
-		\begin{equation}
-			\Rightarrow B_zv_x = q\frac{V_y}{w}
-		\end{equation}
-		
-		\begin{equation}
-			\Rightarrow V_y = \frac{wB_zv_x}{q}
-		\end{equation}
-		
-		\noindent At this point we assume that the current flows according to the Drude model, and so $v_x = I_x/nwtq$, where $n$ is the number density of the dominant charge carrier. Thus we may write the above equation as:
-		
-		\begin{equation}
+		\begin{equation} \label{eq:hallEffect}
 			V_y = \frac{1}{nq}\frac{B_zI_x}{t}
 		\end{equation}
 		
@@ -52,14 +41,72 @@
 			\item $R_H$ varies as the reciprocal of the number density of the dominant charge carrier - thus for small carrier densities a larger effect will be seen. This is of particular importance in measuring the dopant concentration in semiconductors.
 		\end{itemize}
 		
-	\section{Experimental Method}
-		Data was taken in runs where one independent variable was held fixed and the other varied. For example if $I$ was held fixed, $B$ would be varied and vice versa. The varied independent variable was not necessarily selected to be symmetric about zero, however runs were taken for symmetric values of the fixed independent variable. To eliminate the systematic errors due to misalignment and the Nernst, Ettinghausen and Righi-Leduc effects, data from the four quadrants of $(I,V)$ parameter space needs to be combined as follows:
+		In addition to the Hall effect there are several other effects which are present in this situation. These are the misalignment voltage along with the Ettingshausen, Nernst and Righi-Leduc effects:
+		
+		\subsection{Misalignment Voltage}
+			The Misalignment voltage is produced as a result of the voltage probes not being placed on opposite sides of the material. Due to its electrical resistance, a voltage is measured between the two probes when a current is passed along the sample:
+			
+			\begin{equation}
+				V_M \propto I_x
+			\end{equation}
+		
+		\subsection{The Ettingshausen Effect}
+			The Ettingshausen effect produces a temperature gradient along the $\hat{\mathbf{y}}$ direction, this is quantified as\supercite{lindbergHall}:
+			\begin{equation}
+				\Delta T \propto \frac{I_xB_z}{t}
+			\end{equation}
+			
+			\noindent The temperature difference in the $\hat{\mathbf{y}}$ direction will thus result in a thermocouple voltage at the probes. Since this is dependent on exactly the same quantities as the Hall effect, it is difficult to distinguish the two.
+		
+		\subsection{The Nernst Effect}
+			This produces a potential difference across the width of the sample when a thermal current flows in the $\hat{\mathbf{x}}$ direction\supercite{lindbergHall}:
+			\begin{equation}
+				V_N \propto w_xB_z
+			\end{equation}	
+			\begin{center} \emph{Where $w_x$ is thermal current density in the $\hat{\mathbf{x}}$ direction} \end{center}
+		
+		\subsection{The Righi-Leduc Effect}
+			This produces a temperature gradient in the $\hat{\mathbf{y}}$ direction caused by a thermal current in the $\hat{\mathbf{x}}$ direction combined with the magnetic field in the $\hat{\mathbf{z}}$ direction\supercite{lindbergHall}. As with the Ettingshausen effect, this will result in a thermocouple voltage across the sample:
+			\begin{equation}
+				\Delta T \propto w_xB_zw
+			\end{equation}
+			\begin{center} \emph{Where as before $w_x$ is the thermal current density in the $\hat{\mathbf{x}}$ direction and $w$ is the width of the sample.} \end{center}
+		
+		With the exception of the Ettingshausen effect, it is thus possible to eliminate these effects by taking measurements in which either the current or the magnetic field is reversed. The combination of measurements required to do this is shown below\supercite{lindbergHall}:
 		
 		\begin{equation} \label{eq:removeErrors}
 			V_H(B,I) = \frac{V(+B,+I)-V(+B,-I)+V(-B,-I)-V(-B,+I)}{4}
 		\end{equation}
 		
-		\noindent Since the data set is not symmetrically spaced with respect to the varied independent variable (for example if we are holding B constant and varying I, then we require points to be taken at -I for all positive I measured), the following procedure was followed to calculate the Hall coefficient:
+	\section{Experimental Method}
+		The samples were used of dimensions listed in table \ref{table:dimensions}, measured using a micrometer. The thickness of the sample is purposefully chosen to be small so as to increase the size of the measurement.
+		
+		The samples were positioned between two large electromagnets which allowed control of the magnetic field by modifying the current flowing though them. The magnetic field in the region to be occupied by the sample was measured with a Hall probe and was found to be uniform to the extent measurable by the probe (resolution of 1mT), thus effects due to a non-uniform magnetic field could be discounted. It was not possible to measure the strength of the field in directions perpendicular to the $\hat{\mathbf{z}}$ direction defined previously, however it is expected that these fields would be small and ought to have a significantly smaller effect on the measured voltage.
+		
+		In order to control thermal effects a fan and a thermocouple attached to each sample was used to attempt to monitor and control the temperature of the samples during measurements. This could only be done to prevent heating greater than 5 K. In addition, when current was being varied, random values were chosen so as to prevent the current systematically being kept high and thus cumulatively heating the sample. This was particularly important for the metal samples which were subjected to much higher currents and experienced larger amounts of heating. A further consideration was the heating of the coils, which became a significant factor for large magnetic fields as large currents were put through them to achieve this. The coils were thus cooled by a further two fans.
+		
+		At each point in the current-magnetic field parameter space sampled, measurements were made of the current, magnetic field, voltage across the width of the sample and temperature. The latter was taken using a thermocouple attached to the center of the by holding one of the independent variables fixed and varying the other. For the two semiconductor samples, the current through the sample was held constant and the magnetic field varied, whereas the opposite was done for the metal samples. This was decided in particular for the metals to allow for greater control over the heating as previously described.
+	
+	\section{Data Analysis}
+		The data recorded is sampled from a parameter space $(I_x,B_z)$ and consists of runs in which one of the two variables is held constant whilst the other is varied. For the following discussion, the variable held constant is referred to as $Y$ and the varied quantity as $X$. For each run with $Y = Y_i$, a run was performed for $Y' = -Y_i$ so as to allow combining these data as described in equation \ref{eq:removeErrors}. However, the $X$ values selected were not necessarily symmetric about zero and the values chosen were different for different $Y$, which necessitated finding some way of combining these different values of $X$.
+		
+		To begin with, the runs were separated into series containing $X_i$ and $Y_i$ of fixed sign - e.g. all $X_i>0$ and $Y_i<0$ or all $X_i>0$ and $Y_i>0$. These different series were then transformed so as to make equation \ref{eq:removeErrors} the arithmetic mean. This is done using these transformations:
+		\[Y'_i = |Y_i| \qquad X'_i = |X_i| \qquad V'_i = V_i\frac{X_iY_i}{|X_iY_i|}\]
+		
+		A quadratic was then fitted to each series to allow each of the series to be summarised by its set of coefficients, $\boldsymbol{\beta}_i$. This has the benefit of smoothing out statistical noise, however it is possible that information of importance is also eliminated. It was observed that all of the series measured were either almost perfectly linear or had a small amount of curvature indicating that a quadratic fit is well justified and models the behaviour accurately. To retain information about the statistical variation of the data, the maximum error in the voltage measured per series was retained to indicate the confidence limits of its quadratic fit ($\sigma_i$).
+		
+		Following this, the quadratic fits with the same values of $Y'_i$ were grouped and combined by taking the arithmetic mean of their coefficients to give $\boldsymbol{\beta}^\mu_i$. This is valid as the quadratic fits are linear in the coefficients and the transformation performed above ensures that they are combined as required by equation \ref{eq:removeErrors}. In addition, their respective errors were combined using the standard error propagation formula for a linear weighted sum to give $\sigma^\mu_i$.
+		
+		At this stage we are able to compare against the theoretical form of the Hall voltage in equation \ref{eq:hallEffect}. This is accomplished by integrating the squared difference between the theoretical and observed curves whilst weighting relative to the error of the quadratic under consideration. This is essentially based on converting the the reduced Chi-squared statistic to act on continuous rather than discrete data points:
+		
+		\begin{equation}
+			\chi^2_{\textrm{discrete}} = \frac{1}{N}\sum_{i=0}^{i=N}\frac{(O_i-E_i)^2}{\sigma_i^2} \rightarrow \chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
+		\end{equation}
+		
+		\noindent Thus our goodness of fit measure is:
+		\begin{equation}
+			G(R_H) = \frac{1}{N}\sum_j\frac{1}{x_j}\int_{0}^{x_j}\frac{1}{\sigma_j^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx
+		\end{equation}
 		
 		\begin{enumerate}
 			\item For all the data points, $V_i(B_i,I_i)$ perform the transformations:
@@ -96,8 +143,28 @@
 		\end{enumerate}
 	
 	\section{Results and Discussion}
+		
 	
 	\section{Conclusion}
+	
+	\newpage
+	\appendix
+	\section{Appendix}
+	
+	\begin{table}[h!]
+		\begin{center}
+			\begin{tabular}{|l|r|r|r|} 
+			\hline
+			Material  & Thickness /mm & Width /mm    & Length /mm   \\ \hline
+			Silver    & $0.05$        & $20.0\pm0.5$ & $67.0\pm0.5$ \\
+			Tungsten  & $0.05$        & $20.0\pm0.5$ & $67.0\pm0.5$ \\
+			p-type Ge & $1.0\pm0.5$   & $5.0\pm0.5$      & $10.0\pm0.5$ \\
+			n-type Ge & $1.0\pm0.5$   & $5.0\pm0.5$      & $10.0\pm0.5$ \\ \hline	
+			\end{tabular}
+		\end{center}
+		\caption{Dimensions of the materials examined}
+		\label{table:dimensions}
+	\end{table}
 	
 	\newpage
 	\begin{thebibliography}{9}
@@ -106,5 +173,10 @@
 			\emph{On a New Action of the Magnet on Electric Currents},
 			American Journal of Mathematics, Vol 2, p.287-292
 			1879
+		\bibitem{lindbergHall}
+			O. Lindberg,
+			\emph{Hall Effect},
+			Proceedings of the IRE,
+			1952
 	\end{thebibliography}
 \end{document}

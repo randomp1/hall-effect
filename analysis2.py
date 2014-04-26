@@ -258,6 +258,8 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	negativeResult = minimize(lambda x: math.log10(fitQuadraticsToSurface(-math.pow(10.0,x),groupDataList)),-1.0, method='nelder-mead')
 	print 'Positive fit result: ' + str(positiveResult)
 	print 'Negative fit result: ' + str(negativeResult)
+	print '+R_H/t = ' + str(math.pow(10.0,positiveResult['x'])) + ', min error: ' + str(math.pow(10.0,positiveResult['fun']))
+	print '-R_H/t = ' + str(-math.pow(10.0,negativeResult['x'])) + ', min error: ' + str(math.pow(10.0,negativeResult['fun']))
 	
 	rValues = np.logspace(-8,2,1000)
 	totalErrors = []
@@ -373,8 +375,12 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	ax.grid()
 	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors_negative.pdf')
 	
+	print '+R_H/t = ' + str(math.pow(10.0,positiveResult['x'])) + ', min error: ' + str(math.pow(10.0,positiveResult['fun']))
+	print '-R_H/t = ' + str(-math.pow(10.0,negativeResult['x'])) + ', min error: ' + str(math.pow(10.0,negativeResult['fun']))
 	
-		
+	possibleHallConstant = [math.pow(10.0,positiveResult['x']),-math.pow(10.0,negativeResult['x'])]
+	functionValues = [math.pow(10.0,positiveResult['fun']),math.pow(10.0,negativeResult['fun'])]
+	return possibleHallConstant[functionValues.index(min(functionValues))],min(functionValues)
 	
 # results in format: [ [B /T], [B error], [I /A], [I error], [T /C], [T error /C], [V /V], [V error /V] ]
 results = np.load('results.npz')
@@ -384,23 +390,36 @@ nTypeGe = results['nTypeGe'] # I fixed
 tungsten = results['tungsten'] # B fixed
 silver = results['silver'] # B fixed
 
+pTypeGeThickness = 1e-3
+nTypeGeThickness = 1e-3
+tungstenThickness = 5e-5
+silverThickness = 5e-5
+
 print '\n'+\
       '********************************************************************************'+\
       '                             p-Type Ge analysis                                 '+\
       '********************************************************************************'
-getMaterialQuadratics(pTypeGe[0],pTypeGe[2],pTypeGe[6],pTypeGe[1],pTypeGe[3],pTypeGe[7],'p-type Ge','B','T','I','A')
+possibleHallConstant,error = getMaterialQuadratics(pTypeGe[0],pTypeGe[2],pTypeGe[6],pTypeGe[1],pTypeGe[3],pTypeGe[7],'p-type Ge','B','T','I','A')
+print 'Hall Constant (p-type Ge): ' + str(pTypeGeThickness*possibleHallConstant) + ', literature value: 6.6*10^-3, min error: ' + str(error)
+
 print '\n'+\
       '********************************************************************************'+\
       '                             n-Type Ge analysis                                 '+\
       '********************************************************************************'
-getMaterialQuadratics(nTypeGe[0],nTypeGe[2],nTypeGe[6],nTypeGe[1],nTypeGe[3],nTypeGe[7],'n-type Ge','B','T','I','A')
+possibleHallConstant,error = getMaterialQuadratics(nTypeGe[0],nTypeGe[2],nTypeGe[6],nTypeGe[1],nTypeGe[3],nTypeGe[7],'n-type Ge','B','T','I','A')
+print 'Hall Constant (n-type Ge): ' + str(nTypeGeThickness*possibleHallConstant) + ', literature value: 5.6*10^-3, min error: ' + str(error)
+
 print '\n'+\
       '********************************************************************************'+\
       '                              Tungsten analysis                                 '+\
       '********************************************************************************'
-getMaterialQuadratics(tungsten[2],tungsten[0],tungsten[6],tungsten[3],tungsten[1],tungsten[7],'Tungsten','I','A','B','T',rtol=10.0)
+possibleHallConstant,error = getMaterialQuadratics(tungsten[2],tungsten[0],tungsten[6],tungsten[3],tungsten[1],tungsten[7],'Tungsten','I','A','B','T',rtol=10.0)
+print 'Hall Constant (tungsten): ' + str(tungstenThickness*possibleHallConstant) + ', literature value: 1.18*10^-10, min error: ' + str(error)
+
 print '\n'+\
       '********************************************************************************'+\
       '                               Silver analysis                                  '+\
       '********************************************************************************'
-getMaterialQuadratics(silver[2],silver[0],silver[6],silver[3],silver[1],silver[7],'Silver','I','A','B','T',rtol=10.0)
+possibleHallConstant,error = getMaterialQuadratics(silver[2],silver[0],silver[6],silver[3],silver[1],silver[7],'Silver','I','A','B','T',rtol=10.0)
+print 'Hall Constant (silver): ' + str(silverThickness*possibleHallConstant) + ', literature value: 8.9*10^-11, min error: ' + str(error)
+
