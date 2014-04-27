@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{siunitx}
+\usepackage{gensymb}
 
 % Define superscript citation command
 \newcommand{\supercite}[1]{\textsuperscript{\cite{#1}}}
@@ -85,67 +86,60 @@
 		
 		In order to control thermal effects a fan and a thermocouple attached to each sample was used to attempt to monitor and control the temperature of the samples during measurements. This could only be done to prevent heating greater than 5 K. In addition, when current was being varied, random values were chosen so as to prevent the current systematically being kept high and thus cumulatively heating the sample. This was particularly important for the metal samples which were subjected to much higher currents and experienced larger amounts of heating. A further consideration was the heating of the coils, which became a significant factor for large magnetic fields as large currents were put through them to achieve this. The coils were thus cooled by a further two fans.
 		
-		At each point in the current-magnetic field parameter space sampled, measurements were made of the current, magnetic field, voltage across the width of the sample and temperature. The latter was taken using a thermocouple attached to the center of the by holding one of the independent variables fixed and varying the other. For the two semiconductor samples, the current through the sample was held constant and the magnetic field varied, whereas the opposite was done for the metal samples. This was decided in particular for the metals to allow for greater control over the heating as previously described.
+		At each point sampled from the current-magnetic field parameter space, measurements were made of the current, magnetic field, voltage across the width of the sample and temperature. The latter was taken using a thermocouple attached to the center of the by holding one of the independent variables fixed and varying the other. For the two semiconductor samples, the current through the sample was held constant and the magnetic field varied, whereas the opposite was done for the metal samples. This was decided in particular for the metals to allow for greater control over the heating as previously described.
 	
 	\section{Data Analysis}
-		The data recorded is sampled from a parameter space $(I_x,B_z)$ and consists of runs in which one of the two variables is held constant whilst the other is varied. For the following discussion, the variable held constant is referred to as $Y$ and the varied quantity as $X$. For each run with $Y = Y_i$, a run was performed for $Y' = -Y_i$ so as to allow combining these data as described in equation \ref{eq:removeErrors}. However, the $X$ values selected were not necessarily symmetric about zero and the values chosen were different for different $Y$, which necessitated finding some way of combining these different values of $X$.
+		The data recorded is sampled from a parameter space $(I_x,B_z)$ and consists of runs in which one of the two variables is held constant whilst the other is varied. For the following discussion, the variable held constant is referred to as $Y$ and the varied quantity as $X$. For each run with $Y = Y_i$, a run was performed for $Y = -Y_i$ so as to allow combining these data as described in equation \ref{eq:removeErrors}. However, the $X$ values selected were not necessarily symmetric about zero and the values chosen were different for different $Y$, which necessitated finding some way of combining these different values of $X$.
 		
-		To begin with, the runs were separated into series containing $X_i$ and $Y_i$ of fixed sign - e.g. all $X_i>0$ and $Y_i<0$ or all $X_i>0$ and $Y_i>0$. These different series were then transformed so as to make equation \ref{eq:removeErrors} the arithmetic mean. This is done using these transformations:
-		\[Y'_i = |Y_i| \qquad X'_i = |X_i| \qquad V'_i = V_i\frac{X_iY_i}{|X_iY_i|}\]
+		To begin with, the runs were separated into series containing $X$ and $Y_i$ of fixed sign - e.g. all $X>0$ and $Y_i<0$ or all $X>0$ and $Y_i>0$. These different series were then transformed so as to make equation \ref{eq:removeErrors} the arithmetic mean. This is done using these transformations:
+		\[Y'_i = |Y_i| \qquad X' = |X| \qquad V' = V\frac{XY_i}{|XY_i|}\]
 		
-		A quadratic was then fitted to each series to allow each of the series to be summarised by its set of coefficients, $\boldsymbol{\beta}_i$. This has the benefit of smoothing out statistical noise, however it is possible that information of importance is also eliminated. It was observed that all of the series measured were either almost perfectly linear or had a small amount of curvature indicating that a quadratic fit is well justified and models the behaviour accurately. To retain information about the statistical variation of the data, the maximum error in the voltage measured per series was retained to indicate the confidence limits of its quadratic fit ($\sigma_i$).
+		A quadratic was then fitted to each series to allow each of the series to be summarised by its set of coefficients, $\boldsymbol{\beta}_i$. This has the benefit of smoothing out statistical noise, however it is possible that information of importance is also eliminated, or indeed that the quadratics introduce false trends into the data. To mitigate these concerns, the quality of the fit with all series measured was carefully scrutinised. However it was clear from the results that the quadratic fits appear to model the data extremely closely, justifying their use. To retain information about the statistical variation of the data, the maximum error in the voltage measured per series was retained to indicate the confidence limits of its quadratic fit ($\sigma_i$). In other words the error on each point on the curve is $\sigma_i$:
 		
-		Following this, the quadratic fits with the same values of $Y'_i$ were grouped and combined by taking the arithmetic mean of their coefficients to give $\boldsymbol{\beta}^\mu_i$. This is valid as the quadratic fits are linear in the coefficients and the transformation performed above ensures that they are combined as required by equation \ref{eq:removeErrors}. In addition, their respective errors were combined using the standard error propagation formula for a linear weighted sum to give $\sigma^\mu_i$.
+		\begin{equation}
+			V(X',Y'_i) = \begin{pmatrix}X^{\prime2} & X' & 1\end{pmatrix}\cdot\boldsymbol{\beta}_i \pm \sigma_i
+		\end{equation}
 		
-		At this stage we are able to compare against the theoretical form of the Hall voltage in equation \ref{eq:hallEffect}. This is accomplished by integrating the squared difference between the theoretical and observed curves whilst weighting relative to the error of the quadratic under consideration. This is essentially based on converting the the reduced Chi-squared statistic to act on continuous rather than discrete data points:
+		Following this, the quadratic fits with the same values of $Y'_i$ were grouped and combined to eliminate their individual systematic errors by taking the arithmetic mean of their coefficient vectors. This gives a reduced set of corrected quadratic coefficients, $\boldsymbol{\beta}^\mu_j$. This is possible as the quadratic fits are linear in their coefficients and the transformation performed above ensures that they are combined as required by equation \ref{eq:removeErrors}. In addition, their respective errors were combined using the standard error propagation formula for a linear weighted sum to give $\sigma^\mu_j$.
+		
+		At this stage we are able to compare our corrected data against the theoretical form of the Hall voltage in equation \ref{eq:hallEffect}. This is accomplished by integrating the squared difference between the theoretical and observed curves whilst weighting relative to the error of the quadratic under consideration. This is essentially based on converting the the reduced Chi-squared statistic to act on continuous rather than discrete data points:
 		
 		\begin{equation}
 			\chi^2_{\textrm{discrete}} = \frac{1}{N}\sum_{i=0}^{i=N}\frac{(O_i-E_i)^2}{\sigma_i^2} \rightarrow \chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
 		\end{equation}
 		
-		\noindent Thus our goodness of fit measure is:
+		\noindent Thus our goodness of fit measure $G$ is:
 		\begin{equation}
-			G(R_H) = \frac{1}{N}\sum_j\frac{1}{x_j}\int_{0}^{x_j}\frac{1}{\sigma_j^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx
+			G\left(\frac{R_H}{t}\right) = \frac{1}{N}\sum_j\frac{1}{X^{\prime \textrm{max}}_j}\int_{0}^{X^{\prime \textrm{max}}_j}\frac{1}{(\sigma^\mu_j)^2}\left[\begin{pmatrix}X^{\prime2} \\ X' \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}^\mu_j - \frac{R_HXY'_j}{t}\right]^2 dX
 		\end{equation}
+		\begin{center} \emph{Where $N$ is the number of corrected quadratic coefficient vectors we have and $X^{\prime \textrm{max}}_j$ is the maximum value of $X'$ recorded in the original data that went into corrected quadratic $j$.} \end{center}
 		
-		\begin{enumerate}
-			\item For all the data points, $V_i(B_i,I_i)$ perform the transformations:
-			\[B'_i = |B_i| \qquad I'_i = |I_i| \qquad V'_i = V_i\frac{B_iI_i}{|B_iI_i|}\]
-			
-			\item Fit a quadratic to the data for which the varied independent variable is positive using least squares algorithm, giving the coefficients $\boldsymbol{\beta}$. This is justified as all data series are either linear or have slight curvature which is well approximated by the quadratic term - the data is not misrepresented in this way. We also assume that the error is constant for all $x$ and take it to be the maximum error recorded for a particular series.s
-			
-			\item Repeat for all runs and also for the sections of the runs where the varied independent variable is negative. Now have a set of coefficients $\boldsymbol{\beta}_i$.
-			
-			\item Due to the transformations performed on the data, $V_H$ is now the mean of the quantities in equation \ref{eq:removeErrors}. Since the quadratic equation is linear in the coefficients, the corrected $V_H$ for a particular value of the fixed independent variable may be written as a quadratic equation with coefficients calculated from the list of corresponding coefficient vectors:
-			\[ \boldsymbol{\beta}_\mu = \frac{\sum\boldsymbol{\beta}_i}{N} \]
-			
-			\noindent Similarly, we calculate the error ($\sigma_j$) in the combined quadratic using the standard error propagation formula for a linear combination of quantities.
-			
-			\item Subsequently, $V_H(B,I)$ needs to be fitted to the theoretical prediction of the Hall voltage by varying the Hall coefficient $R_H$. To do this we calculate a goodness of fit value as a function of the Hall coefficient, $G(R_H)$. A useful measure of goodness of fit is the reduced Chi-squared test statistic:
-			\begin{equation}
-				\chi^2_{\textrm{discrete}} = \frac{1}{N}\sum_{i=0}^{i=N}\frac{(O_i-E_i)^2}{\sigma_i^2} \rightarrow \chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
-			\end{equation}
-			\noindent However since we are dealing with a continuous set of `data points' this must be converted to a continuous form:
-			\begin{equation}
-				\chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
-			\end{equation}
-			
-			\noindent Thus the form of $G(R_H)$ becomes the following:
-			
-			\begin{equation}
-				G(R_H) = \frac{1}{N}\sum_j\frac{1}{x_j}\int_{0}^{x_j}\frac{1}{\sigma_j^2}\left[\begin{pmatrix} x^2 \\ x \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}_\mu(y_j) - R_Hxy_j\right]^2 dx
-			\end{equation}
-			\begin{center}\emph{Where $x$ represents the varied independent variable, $x_j$ is its maximum value measured, $y_j$ represent the different independent variables held constant and $\sigma_j$ is the expected standard error.}\end{center}
-			
-			\noindent Crucially, since the corrected quadratics are derived from data in a certain region of the parameter space ($x$ ranging from $0$ to $x_1$), it is only valid to integrate over that region.
-			
-			\item We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. This was performed numerically using the Nelder-Mead method operating on the modified function $\mathcal{G}(R'_H) = \log(G(\log(R_H))$. This was done as $R_H$ spans many orders of magnitude for different materials.
-		\end{enumerate}
+		We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. The minimization was performed numerically using the Nelder-Mead method operating in log space via the functions $\mathcal{G_+}(R'_H/t') = \log(G(\log(R_H/t))$ and $\mathcal{G_-}(R'_H/t') = \log(G(-\log(R_H/t))$. This was done as $R_H/t$ spans many orders of magnitude for different materials and the minimisation function often missed out the minimum when $R_H/t$ was particularly small.
 	
 	\section{Results and Discussion}
+		\subsection{Raw Data}
+			As described in the previous section, the data was taken in a series of 'runs'. These are plotted for the different materials in figure blah along with the quadratic fits previously described.
+			
+			The semiconductor samples both exhibit a strong Hall effect, with the voltage recorded in the mV range. The curves for the two materials can be seen to have opposite gradients for the the same regions of parameter space, indicating that as expected the dominant charge carriers in the two materials have different polarity. Furthermore, for both of these materials the data follows a virtually perfect linear relationship with the current. However, in the case of the p-type sample a slight amount of curvature is visible for larger currents. Notably, this perturbation to the linear relationship changes sign when either of the the magnetic field or the current are reversed. This means it will not be removed by our elimination procedure and could therefore be due to the Ettingshausen effect which also has this property.
+			
+			The metal samples on the other hand produced extremely small voltages on the order of 10-100\SI{}{\micro\volt}. In addition, the large currents passed through them (up to 10A) resulted in significant amounts of heating, particularly in the case of the tungsten sample. For the silver samples there appears to be a very good linear fit to the data, however unlike the semiconductor samples, the sign of the voltage measured does not reverse when the sign of the magnetic field changes. This would appear to indicate that a large portion of the signal measured here is not in fact due to the Hall effect, and will be removed by the elimination procedure. In the case of the tungsten sample a similar effect was seen, in addition to large amounts of curvature when the magnetic field was negative. Interestingly this amount of curvature was not observed when the magnetic field was positive. Since this does not seem to fit with any of the systematic errors expected, it is possible that it is due to some further systematic error such as inadequately controlled temperature during particular series of measurements. Indeed the temperatures recorded for negative fields were in general lower than those measured for positive fields (approx in the ranges 23\degree C-25\degree C vs. 24\degree C-27\degree C respectively).
 		
+		\subsection{Combined Data}
+			After the mean of the matching quadratics was taken, the results were plotted along with the best-fitting Hall effect curve, as calculated by the fitting procedure described above. These are shown in figure BLAH BLAH BLAH BLAH. For all of these plots the combined quadratic is shown in blue, and the confidence limits are indicated by the dashed grey lines enclosing the shaded yellow area. The best fitting Hall effect curve is plotted in green.
+			
+			For both semiconductors, it is clear that the combined quadratics make a good fit with the hall effect model. Both combined quadratics display a small offset from zero and also a slight amount of curvature - with the curvature more promiment in the case of the p-type conductor as predicted.
+			
+			The corrected quadratics of the metals display large amounts of curvature and also have reasonably large offsets from zero. As predicted the hall voltage extracted from the silver data is very small, and of comparable size with that produced from the tungsten data. Furthermore, with some of the systematic errors removed the silver sample appears to have a greater curvature than that shown by the corrected quadratics for tungsten. This would suggest that the silver samples are exposed to a stronger systematic error. A rough agreement is generally observed between the quadratics representing the data and the theoretical Hall voltage.
+		
+		\subsection{Goodness of Fit of Theoretical Hall Voltage}
+			The value of the function $G(R_H/t)$ defined previously was calculated for a range of values including that of the best fit, this is plotted in figure blah blah. A red point is plotted at the position calculated by the minimisation routine of the best fitting value of $R_H/t$.
+			
+			The value of $G(R_H/t)$ for the best fitting values of $R_H/t$ is generally found to be on the order of 1, indicating a reasonably good fit, however despite the p-type and n-type data producing generally better fits the statistic is in fact worse for them than for the metals. This is largely a result of the very small relative errors which were listed for the semiconductor measured voltages, by comparison to the large relative errors for the metal samples. Since the errors assigned are not likely to be good estimators of the standard deviation (other than as an order of magnitude estimate) this result is probably not meaningful.
+			
+			What is perhaps more meaningful is the shape of the graphs in the vicinity of the errors. In particular, the semiconductor graphs have generally a 'sharper' minimum than the minima found in the graphs for the metals. This can be considered analogous to measuring how close points $x$ on a straight line come to a point, where $x=0$ is the position on the line where it makes its closest approach to the point and $r_0$ is their separation at $x=0$. The separation at position $x$ is thus $r=\sqrt{r_0^2+x^2}$, with $r_0$ controlling how 'sharp' the curve $r(x)$ is. Similarly the sharpness of the minima on the error curves give a further indication of how close the theoretical hall voltage comes to the data. Considering the log scale shown on the goodness of fit plots, the semiconductors clearly fit the data significantly more closely than the metals.
 	
 	\section{Conclusion}
+	
 	
 	\newpage
 	\appendix

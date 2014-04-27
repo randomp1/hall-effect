@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import copy
 from scipy import integrate
 from scipy.optimize import minimize
+from scipy.optimize import brentq
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
@@ -256,12 +257,42 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	groupDataList = zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList)
 	positiveResult = minimize(lambda x: math.log10(fitQuadraticsToSurface(math.pow(10.0,x),groupDataList)), -1.0, method='nelder-mead')
 	negativeResult = minimize(lambda x: math.log10(fitQuadraticsToSurface(-math.pow(10.0,x),groupDataList)),-1.0, method='nelder-mead')
-	print 'Positive fit result: ' + str(positiveResult)
-	print 'Negative fit result: ' + str(negativeResult)
-	print '+R_H/t = ' + str(math.pow(10.0,positiveResult['x'])) + ', min error: ' + str(math.pow(10.0,positiveResult['fun']))
-	print '-R_H/t = ' + str(-math.pow(10.0,negativeResult['x'])) + ', min error: ' + str(math.pow(10.0,negativeResult['fun']))
+	#print 'Positive fit result: ' + str(positiveResult)
+	#print 'Negative fit result: ' + str(negativeResult)
 	
-	rValues = np.logspace(-8,2,1000)
+	print 'results of minimization:'
+	print '\t+R_H/t = ' + str(math.pow(10.0,positiveResult['x'])) + ', min error: ' + str(math.pow(10.0,positiveResult['fun']))
+	print '\t-R_H/t = ' + str(-math.pow(10.0,negativeResult['x'])) + ', min error: ' + str(math.pow(10.0,negativeResult['fun']))
+	
+	minima = [math.pow(10.0,positiveResult['x']),-math.pow(10.0,negativeResult['x'])]
+	errors = [math.pow(10.0,positiveResult['fun']),math.pow(10.0,negativeResult['fun'])]
+	minimum = minima[errors.index(min(errors))]
+	error = min(errors)
+	
+	print 'Selecting result with R_H/t = ' + str(minimum) + ', min error = ' + str(error)
+	
+	# Calculate error on R_H/t
+	if(minimum > 0):
+		errorPos = brentq(lambda x: math.log10(fitQuadraticsToSurface(math.pow(10.0,x),groupDataList))-math.log10(fitQuadraticsToSurface(minimum,groupDataList))-0.5, math.log10(minimum),math.log10(minimum)+1.0,full_output=True)
+	else:
+		errorPos = brentq(lambda x: math.log10(fitQuadraticsToSurface(-math.pow(10.0,x),groupDataList))-math.log10(fitQuadraticsToSurface(minimum,groupDataList))-0.5, math.log10(-minimum),math.log10(-minimum)+1.0,full_output=True)
+		#errorPos = minimize(lambda x: abs(math.log10(fitQuadraticsToSurface(-math.pow(10.0,x),groupDataList))-math.log10(fitQuadraticsToSurface(possibleHallConstant[functionValues.index(min(functionValues))],groupDataList))-1), possibleHallConstant[functionValues.index(min(functionValues))], method='nelder-mead')
+	
+	if(minimum > 0):
+		confidenceLimit = math.pow(10.0,errorPos[0])
+	else:
+		confidenceLimit = -math.pow(10.0,errorPos[0])
+	minimumError = abs(confidenceLimit-minimum)
+	
+	print 'minimize to find error on R_H/t:\n' + str(errorPos[1])
+	print 'Possible confidence limit on R_H/t: ' + str(confidenceLimit)
+	print 'Error on R_H/t: ' + str(abs(confidenceLimit-minimum))
+	
+	# Plot coefficient errors vs. R_H
+	if(minimum > 0):
+		rValues = np.logspace(math.log10(minimum)-2,math.log10(minimum)+2,1000)
+	else:
+		rValues = np.multiply(np.logspace(math.log10(-minimum)-2,math.log10(-minimum)+2,1000),-1)
 	totalErrors = []
 	for r in rValues:
 		totalError = 0.0
@@ -273,7 +304,31 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 		totalError *= 1.0/len(zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList))
 		totalErrors.append(totalError)
 	
-	# Plot positive coefficient fit result
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	if(minimum > 0):
+		ax.plot(rValues,totalErrors)
+		ax.plot(minimum,error,'ro')
+		ax.set_xlim(min(rValues),max(rValues))
+		ax.axvline(x=confidenceLimit,color='k')
+	else:
+		ax.plot(np.multiply(-1,rValues),totalErrors)
+		ax.plot(-minimum,error,'ro')
+		ax.set_xlim(min(np.multiply(-1,rValues)),max(np.multiply(-1,rValues)))
+		ax.axvline(x=-confidenceLimit,color='k')
+	ax.axhline(y=math.pow(10.0,math.log10(error)+0.5),color='k')
+	ax = plt.axes()
+	ax.set_xscale('log')
+	ax.set_yscale('log')
+	if(minimum > 0):
+		ax.set_xlabel(r'$R_H/t$ /\SI{}{\square\metre\per\coulomb}')
+	else:
+		ax.set_xlabel(r'$-R_H/t$ /\SI{}{\square\metre\per\coulomb}')
+	ax.set_ylabel('Integral of squared errors',rotation=90)
+	ax.grid()
+	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors.pdf')
+	
+	# Plot quadratics vs best fit hall voltage curve
 	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
@@ -281,7 +336,7 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 		yValsEmpirical,yMinVals,yMaxVals = quadraticCurveBounds(group[0],np.multiply(1e4,group[1]),xSpace)
 		yMinVals = [ y-group[4] for y in yValsEmpirical ]
 		yMaxVals = [ y+group[4] for y in yValsEmpirical ]
-		yValsTheoretical = [ math.pow(10.0,positiveResult['x'][0])*x*group[2] for x in xSpace ]
+		yValsTheoretical = [ minimum*x*group[2] for x in xSpace ]
 		if(max([ abs(y) for y in yValsEmpirical]) < 1e-3):
 			yValsEmpirical = np.multiply(yValsEmpirical,1e6)
 			yMinVals = np.multiply(yMinVals,1e6)
@@ -303,84 +358,9 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 		ax.set_xlabel(str(XQuantity) + ' /' + str(XUnit))
 		ax.set_xlim(0.0,group[3])
 		ax.grid()
-		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '_positive.pdf')
-		
-	# Plot negative coefficient fit result
-	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
-		fig = plt.figure()
-		ax = fig.add_subplot(111)
-		xSpace = np.linspace(0.0,group[3])
-		yValsEmpirical,yMinVals,yMaxVals = quadraticCurveBounds(group[0],np.multiply(1e4,group[1]),xSpace)
-		yMinVals = [ y-group[4] for y in yValsEmpirical ]
-		yMaxVals = [ y+group[4] for y in yValsEmpirical ]
-		yValsTheoretical = [ -math.pow(10.0,negativeResult['x'][0])*x*group[2] for x in xSpace ]
-		if(max([ abs(y) for y in yValsEmpirical]) < 1e-3):
-			yValsEmpirical = np.multiply(yValsEmpirical,1e6)
-			yMinVals = np.multiply(yMinVals,1e6)
-			yMaxVals = np.multiply(yMaxVals,1e6)
-			yValsTheoretical = np.multiply(yValsTheoretical,1e6)
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
-		elif(max([ abs(y) for y in yValsEmpirical]) < 1.0):
-			yValsEmpirical = np.multiply(yValsEmpirical,1e3)
-			yMinVals = np.multiply(yMinVals,1e3)
-			yMaxVals = np.multiply(yMaxVals,1e3)
-			yValsTheoretical = np.multiply(yValsTheoretical,1e3)
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\milli\volt}')
-		else:
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\volt}')
-		ax.plot(xSpace,yValsTheoretical,'g-')
-		ax.plot(xSpace,yValsEmpirical,'b-')
-		ax.fill_between(xSpace, yMinVals, yMaxVals, facecolor='yellow',alpha=0.5,linestyle='--')
-		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' ' + str(YUnit))
-		ax.set_xlabel(str(XQuantity) + ' /' + str(XUnit))
-		ax.set_xlim(0.0,group[3])
-		ax.grid()
-		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '_negative.pdf')
+		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '.pdf')
 	
-	# Plot positive coefficient errors vs. R_H
-	fig = plt.figure()
-	ax = fig.add_subplot(111)
-	ax.plot(rValues,totalErrors)
-	ax.plot(math.pow(10.0,positiveResult['x'][0]),math.pow(10.0,positiveResult['fun']),'ro')
-	ax = plt.axes()
-	ax.set_xscale('log')
-	ax.set_yscale('log')
-	ax.set_xlabel(r'$R_H/t$ /\SI{}{\square\metre\per\coulomb}')
-	ax.set_ylabel('Integral of squared errors',rotation=90)
-	ax.grid()
-	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors_positive.pdf')
-	
-	rValuesNegative = np.dot(-1.0,np.logspace(-8,2,1000))
-	totalErrors = []
-	for r in rValuesNegative:
-		totalError = 0.0
-		for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
-			totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/group[4]**2,0.0,group[3])[0]
-			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2/(group[1][0]**2*x**4+group[1][1]**2*x**2 + group[1][2]**2),0.0,group[3])[0]
-			#totalError += (1.0/group[3])*integrate.quad(lambda x: (group[0][0]*x**2 + group[0][1]*x + group[0][2] - r*x*group[2])**2,0.0,group[3])[0]
-		
-		totalError *= 1.0/len(zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList))
-		totalErrors.append(totalError)
-	
-	# Plot negative coefficient errors vs. R_H
-	fig = plt.figure()
-	ax = fig.add_subplot(111)
-	ax.plot(rValues,totalErrors)
-	ax.plot(math.pow(10.0,negativeResult['x'][0]),math.pow(10.0,negativeResult['fun']),'ro')
-	ax = plt.axes()
-	ax.set_xscale('log')
-	ax.set_yscale('log')
-	ax.set_xlabel(r'$-R_H/t$ /\SI{}{\square\metre\per\coulomb}')
-	ax.set_ylabel('Integral of squared errors',rotation=90)
-	ax.grid()
-	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors_negative.pdf')
-	
-	print '+R_H/t = ' + str(math.pow(10.0,positiveResult['x'])) + ', min error: ' + str(math.pow(10.0,positiveResult['fun']))
-	print '-R_H/t = ' + str(-math.pow(10.0,negativeResult['x'])) + ', min error: ' + str(math.pow(10.0,negativeResult['fun']))
-	
-	possibleHallConstant = [math.pow(10.0,positiveResult['x']),-math.pow(10.0,negativeResult['x'])]
-	functionValues = [math.pow(10.0,positiveResult['fun']),math.pow(10.0,negativeResult['fun'])]
-	return possibleHallConstant[functionValues.index(min(functionValues))],min(functionValues)
+	return minimum,error,minimumError
 	
 # results in format: [ [B /T], [B error], [I /A], [I error], [T /C], [T error /C], [V /V], [V error /V] ]
 results = np.load('results.npz')
@@ -395,31 +375,44 @@ nTypeGeThickness = 1e-3
 tungstenThickness = 5e-5
 silverThickness = 5e-5
 
+pTypeGeThicknessError = 5e-4
+nTypeGeThicknessError = 5e-4
+
 print '\n'+\
       '********************************************************************************'+\
       '                             p-Type Ge analysis                                 '+\
       '********************************************************************************'
-possibleHallConstant,error = getMaterialQuadratics(pTypeGe[0],pTypeGe[2],pTypeGe[6],pTypeGe[1],pTypeGe[3],pTypeGe[7],'p-type Ge','B','T','I','A')
-print 'Hall Constant (p-type Ge): ' + str(pTypeGeThickness*possibleHallConstant) + ', literature value: 6.6*10^-3, min error: ' + str(error)
+possibleHallConstant,error,errorHallConst = getMaterialQuadratics(pTypeGe[0],pTypeGe[2],pTypeGe[6],pTypeGe[1],pTypeGe[3],pTypeGe[7],'p-type Ge','B','T','I','A')
+hallConst = pTypeGeThickness*possibleHallConstant
+errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
+#errorHallConst = abs(hallConst)*math.sqrt((pTypeGeThicknessError/pTypeGeThickness)**2 + (errorHallConst/possibleHallConstant)**2)
+print 'Hall Constant (p-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 6.6*10^-3, min error: ' + str(error)
 
 print '\n'+\
       '********************************************************************************'+\
       '                             n-Type Ge analysis                                 '+\
       '********************************************************************************'
-possibleHallConstant,error = getMaterialQuadratics(nTypeGe[0],nTypeGe[2],nTypeGe[6],nTypeGe[1],nTypeGe[3],nTypeGe[7],'n-type Ge','B','T','I','A')
-print 'Hall Constant (n-type Ge): ' + str(nTypeGeThickness*possibleHallConstant) + ', literature value: 5.6*10^-3, min error: ' + str(error)
+possibleHallConstant,error,errorHallConst = getMaterialQuadratics(nTypeGe[0],nTypeGe[2],nTypeGe[6],nTypeGe[1],nTypeGe[3],nTypeGe[7],'n-type Ge','B','T','I','A')
+hallConst = nTypeGeThickness*possibleHallConstant
+errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
+#errorHallConst = abs(hallConst)*math.sqrt((nTypeGeThicknessError/nTypeGeThickness)**2 + (errorHallConst/possibleHallConstant)**2)
+print 'Hall Constant (n-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -5.6*10^-3, min error: ' + str(error)
 
 print '\n'+\
       '********************************************************************************'+\
       '                              Tungsten analysis                                 '+\
       '********************************************************************************'
-possibleHallConstant,error = getMaterialQuadratics(tungsten[2],tungsten[0],tungsten[6],tungsten[3],tungsten[1],tungsten[7],'Tungsten','I','A','B','T',rtol=10.0)
-print 'Hall Constant (tungsten): ' + str(tungstenThickness*possibleHallConstant) + ', literature value: 1.18*10^-10, min error: ' + str(error)
+possibleHallConstant,error,errorHallConst = getMaterialQuadratics(tungsten[2],tungsten[0],tungsten[6],tungsten[3],tungsten[1],tungsten[7],'Tungsten','I','A','B','T',rtol=10.0)
+hallConst = tungstenThickness*possibleHallConstant
+errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
+print 'Hall Constant (tungsten): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 1.18*10^-10, min error: ' + str(error)
 
 print '\n'+\
       '********************************************************************************'+\
       '                               Silver analysis                                  '+\
       '********************************************************************************'
-possibleHallConstant,error = getMaterialQuadratics(silver[2],silver[0],silver[6],silver[3],silver[1],silver[7],'Silver','I','A','B','T',rtol=10.0)
-print 'Hall Constant (silver): ' + str(silverThickness*possibleHallConstant) + ', literature value: 8.9*10^-11, min error: ' + str(error)
+possibleHallConstant,error,errorHallConst = getMaterialQuadratics(silver[2],silver[0],silver[6],silver[3],silver[1],silver[7],'Silver','I','A','B','T',rtol=10.0)
+hallConst = silverThickness*possibleHallConstant
+errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
+print 'Hall Constant (silver): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -8.9*10^-11, min error: ' + str(error)
 

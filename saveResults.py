@@ -34,6 +34,14 @@ length = len(silver[0])
 for i in silver:
 	if len(i) != length:
 		raise ValueError('Wrong length arrays!')
+		
+pTypeGe[6] = np.multiply(-1,pTypeGe[6])
+
+nTypeGe[6] = np.multiply(-1,nTypeGe[6])
+
+#tungsten[6] = np.multiply(-1,tungsten[6])
+
+silver[6] = np.multiply(-1,silver[6])
 
 np.savez_compressed('results',
                     pTypeGe=pTypeGe,

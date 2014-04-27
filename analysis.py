@@ -479,7 +479,7 @@ for run in silverRuns:
 	sortedRun = [ list(i) for i in zip(*sorted(zip(*run),key=lambda tup: tup[2])) ]
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	ax.errorbar(sortedRun[2],[ s*1e6 for s in sortedRun[6] ],yerr=[ s*1e6 for s in sortedRun[7] ],fmt='bo')
+	ax.errorbar(sortedRun[2],[ s*1e6 for s in sortedRun[6] ],yerr=[ e*1e6 for s in sortedRun[7] ],fmt='bo')
 	ax.set_xlim(-12,12)
 	
 	negatives,positives = separateSigns(sortedRun[2])

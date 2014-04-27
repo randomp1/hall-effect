@@ -8,10 +8,6 @@
 # Delete unnecessary graphs from graph folders
 cd ./graphs_raw
 ./rm_unnecessary.sh
-cd ../correctedGraphs
-./rm_unnecessary.sh
-cd ../fitnessGraphs
-./rm_unnecessary.sh
 
 cd ..
 
