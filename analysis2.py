@@ -19,7 +19,7 @@ plt.rc('text.latex', preamble = ','.join('''
  '''.split()))
 # Pts to inches conversion factor
 pointsToInches=1/72.27
-widthPts = 450.0
+widthPts = 345.0/2
 widthInches = widthPts*pointsToInches
 heightInches = widthInches/1.61803398875
 plt.rc('figure', figsize=(widthInches,heightInches))
@@ -290,9 +290,9 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 	
 	# Plot coefficient errors vs. R_H
 	if(minimum > 0):
-		rValues = np.logspace(math.log10(minimum)-2,math.log10(minimum)+2,1000)
+		rValues = np.logspace(math.log10(minimum)-1,math.log10(minimum)+1,1000)
 	else:
-		rValues = np.multiply(np.logspace(math.log10(-minimum)-2,math.log10(-minimum)+2,1000),-1)
+		rValues = np.multiply(np.logspace(math.log10(-minimum)-1,math.log10(-minimum)+1,1000),-1)
 	totalErrors = []
 	for r in rValues:
 		totalError = 0.0
@@ -324,9 +324,9 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 		ax.set_xlabel(r'$R_H/t$ /\SI{}{\square\metre\per\coulomb}')
 	else:
 		ax.set_xlabel(r'$-R_H/t$ /\SI{}{\square\metre\per\coulomb}')
-	ax.set_ylabel('Integral of squared errors',rotation=90)
+	ax.set_ylabel(r'$G\left(\frac{R_H}{t}\right)$',rotation=90)
 	ax.grid()
-	fig.savefig(str(fitnessDirectory) + str(materialName) + '_errors.pdf')
+	fig.savefig(str(fitnessDirectory) + str(materialName).replace(' ','_') + '_errors.pdf')
 	
 	# Plot quadratics vs best fit hall voltage curve
 	for group in zip(groupCoefficientsList,groupCoefficientErrorsList,groupYValueList,groupMaxXList,groupErrorZList):
@@ -342,23 +342,23 @@ def getMaterialQuadratics(X,Y,Z,Xerr,Yerr,Zerr,materialName,XQuantity,XUnit,YQua
 			yMinVals = np.multiply(yMinVals,1e6)
 			yMaxVals = np.multiply(yMaxVals,1e6)
 			yValsTheoretical = np.multiply(yValsTheoretical,1e6)
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
+			ax.set_ylabel(r'$V_H$ /\SI{}{\micro\volt}')
 		elif(max([ abs(y) for y in yValsEmpirical]) < 1.0):
 			yValsEmpirical = np.multiply(yValsEmpirical,1e3)
 			yMinVals = np.multiply(yMinVals,1e3)
 			yMaxVals = np.multiply(yMaxVals,1e3)
 			yValsTheoretical = np.multiply(yValsTheoretical,1e3)
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\milli\volt}')
+			ax.set_ylabel(r'$V_H$ /\SI{}{\milli\volt}')
 		else:
-			ax.set_ylabel(r'Hall Voltage /\SI{}{\volt}')
+			ax.set_ylabel(r'$V_H$ /\SI{}{\volt}')
 		ax.plot(xSpace,yValsTheoretical,'g-')
 		ax.plot(xSpace,yValsEmpirical,'b-')
 		ax.fill_between(xSpace, yMinVals, yMaxVals, facecolor='yellow',alpha=0.5,linestyle='--')
-		ax.set_title(str(materialName) + ', ' + str(YQuantity) + '=' + str(group[2])[:6] + ' ' + str(YUnit))
+		#ax.set_title(str(YQuantity) + '=' + str(group[2])[:6] + ' ' + str(YUnit))
 		ax.set_xlabel(str(XQuantity) + ' /' + str(XUnit))
 		ax.set_xlim(0.0,group[3])
 		ax.grid()
-		fig.savefig(str(correctedDirectory) + str(materialName) + '_corrected_' + str(group[2])[:6] + '.pdf')
+		fig.savefig(str(correctedDirectory) + str(materialName).replace(' ','_') + '_corrected_' + str(group[2])[:6].replace('.','_') + '.pdf')
 	
 	return minimum,error,minimumError
 	
@@ -378,6 +378,8 @@ silverThickness = 5e-5
 pTypeGeThicknessError = 5e-4
 nTypeGeThicknessError = 5e-4
 
+electronCharge = 1.60217657e-19
+
 print '\n'+\
       '********************************************************************************'+\
       '                             p-Type Ge analysis                                 '+\
@@ -386,7 +388,8 @@ possibleHallConstant,error,errorHallConst = getMaterialQuadratics(pTypeGe[0],pTy
 hallConst = pTypeGeThickness*possibleHallConstant
 errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
 #errorHallConst = abs(hallConst)*math.sqrt((pTypeGeThicknessError/pTypeGeThickness)**2 + (errorHallConst/possibleHallConstant)**2)
-print 'Hall Constant (p-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 6.6*10^-3, min error: ' + str(error)
+print '\nHall Constant (p-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 6.6*10^-3, min error: ' + str(error)
+print 'Charge number density, n = ' + str(abs(1.0/(electronCharge*hallConst))) + '±' + str(errorHallConst/(electronCharge*hallConst**2))
 
 print '\n'+\
       '********************************************************************************'+\
@@ -396,7 +399,8 @@ possibleHallConstant,error,errorHallConst = getMaterialQuadratics(nTypeGe[0],nTy
 hallConst = nTypeGeThickness*possibleHallConstant
 errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
 #errorHallConst = abs(hallConst)*math.sqrt((nTypeGeThicknessError/nTypeGeThickness)**2 + (errorHallConst/possibleHallConstant)**2)
-print 'Hall Constant (n-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -5.6*10^-3, min error: ' + str(error)
+print '\nHall Constant (n-type Ge): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -5.6*10^-3, min error: ' + str(error)
+print 'Charge number density, n = ' + str(abs(1.0/(electronCharge*hallConst))) + '±' + str(errorHallConst/(electronCharge*hallConst**2))
 
 print '\n'+\
       '********************************************************************************'+\
@@ -405,7 +409,8 @@ print '\n'+\
 possibleHallConstant,error,errorHallConst = getMaterialQuadratics(tungsten[2],tungsten[0],tungsten[6],tungsten[3],tungsten[1],tungsten[7],'Tungsten','I','A','B','T',rtol=10.0)
 hallConst = tungstenThickness*possibleHallConstant
 errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
-print 'Hall Constant (tungsten): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 1.18*10^-10, min error: ' + str(error)
+print '\nHall Constant (tungsten): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: 1.18*10^-10, min error: ' + str(error)
+print 'Charge number density, n = ' + str(abs(1.0/(electronCharge*hallConst))) + '±' + str(errorHallConst/(electronCharge*hallConst**2))
 
 print '\n'+\
       '********************************************************************************'+\
@@ -414,5 +419,6 @@ print '\n'+\
 possibleHallConstant,error,errorHallConst = getMaterialQuadratics(silver[2],silver[0],silver[6],silver[3],silver[1],silver[7],'Silver','I','A','B','T',rtol=10.0)
 hallConst = silverThickness*possibleHallConstant
 errorHallConst = abs(hallConst*errorHallConst/possibleHallConstant)
-print 'Hall Constant (silver): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -8.9*10^-11, min error: ' + str(error)
+print '\nHall Constant (silver): ' + str(hallConst) + ' ± ' + str(errorHallConst) + ', \'correct\' value: -8.9*10^-11, min error: ' + str(error)
+print 'Charge number density, n = ' + str(abs(1.0/(electronCharge*hallConst))) + '±' + str(errorHallConst/(electronCharge*hallConst**2))
 

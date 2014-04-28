@@ -15,7 +15,7 @@ plt.rc('text.latex', preamble = ','.join('''
  '''.split()))
 # Pts to inches conversion factor
 pointsToInches=1/72.27
-widthPts = 450.0
+widthPts = 345.0/2
 widthInches = widthPts*pointsToInches
 heightInches = widthInches/1.61803398875
 plt.rc('figure', figsize=(widthInches,heightInches))
@@ -140,7 +140,7 @@ pTypeGeRuns = [ zip(*zip(*pTypeGe)[a:b]) for a,b in pTypeGeRunIndices ]
 for run in pTypeGeRuns:
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	ax.errorbar(run[0],run[6],yerr=run[7],fmt='bo')
+	ax.errorbar(run[0],np.multiply(1e3,run[6]),yerr=np.multiply(1e3,run[7]),fmt='bo')
 	ax.set_xlim(-0.3,0.3)
 	
 	negatives,positives = separateSigns(run[0])
@@ -150,7 +150,7 @@ for run in pTypeGeRuns:
 		print 'Errors: ' + str([ math.sqrt(posCovMatrix[i][i]) for i in range(len(posCovMatrix)) ])
 		positiveSpace = np.linspace(0.0,ax.get_xlim()[1])
 		positiveValues,posLowerBound,posUpperBound = quadraticCurveBounds(positiveCoefficients,[ math.sqrt(posCovMatrix[i][i]) for i in range(len(posCovMatrix)) ],positiveSpace)
-		ax.plot(positiveSpace,positiveValues,'g-')
+		ax.plot(positiveSpace,np.multiply(1e3,positiveValues),'g-')
 		#ax.fill_between(positiveSpace, posLowerBound, posUpperBound, facecolor='yellow',alpha=0.5,linestyle='--')
 	if(negatives[0] != None):
 		negativeCoefficients,negCovMatrix = getCoeffsAndCovMatrix(run[0][negatives[0]:negatives[1]],run[6][negatives[0]:negatives[1]],run[7][negatives[0]:negatives[1]],2)
@@ -158,15 +158,15 @@ for run in pTypeGeRuns:
 		print 'Errors: ' + str([ math.sqrt(negCovMatrix[i][i]) for i in range(len(negCovMatrix)) ])
 		negativeSpace = np.linspace(ax.get_xlim()[0],0.0)
 		negativeValues,negLowerBound,negUpperBound = quadraticCurveBounds(negativeCoefficients,[ math.sqrt(negCovMatrix[i][i]) for i in range(len(negCovMatrix)) ],negativeSpace)
-		ax.plot(negativeSpace,negativeValues,'r-')
+		ax.plot(negativeSpace,np.multiply(1e3,negativeValues),'r-')
 		#ax.fill_between(negativeSpace, negLowerBound, negUpperBound, facecolor='yellow',alpha=0.5,linestyle='--')
 	
-	ax.set_title('p-type Ge, I=' + str(run[2][0])[:6] + 'A')
+	#ax.set_title('p-type Ge, I=' + str(run[2][0])[:6] + 'A')
 	ax.set_xlabel('B /T')
-	ax.set_ylabel('Hall voltage /V')
+	ax.set_ylabel('V /mV')
 	print 'Max error: ' + str(max(run[7]))
 	ax.grid()
-	fig.savefig(str(outputFolder) + 'pTypeGe_' + str(run[2][0]) + '.pdf')
+	fig.savefig(str(outputFolder) + 'pTypeGe_' + str(run[2][0]).replace('.','_') + '.pdf')
 
 runCoefficientsList = []
 runCoefficientErrorsList = []
@@ -280,7 +280,7 @@ nTypeGeRuns = [ zip(*zip(*nTypeGe)[a:b]) for a,b in nTypeGeRunIndices ]
 for run in nTypeGeRuns:
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	ax.errorbar(run[0],run[6],yerr=run[7],fmt='bo')
+	ax.errorbar(run[0],np.multiply(1e3,run[6]),yerr=np.multiply(1e3,run[7]),fmt='bo')
 	ax.set_xlim(-0.3,0.3)
 	
 	negatives,positives = separateSigns(run[0])
@@ -289,20 +289,20 @@ for run in nTypeGeRuns:
 		print 'Positive coefficients: ' + str(positiveCoefficients)
 		positiveSpace = np.linspace(0.0,ax.get_xlim()[1])
 		positiveValues = [ positiveCoefficients[0]*(x**2) + positiveCoefficients[1]*x + positiveCoefficients[2] for x in positiveSpace ]
-		ax.plot(positiveSpace,positiveValues,'g-')
+		ax.plot(positiveSpace,np.multiply(positiveValues,1e3),'g-')
 	if(negatives[0] != None):
 		negativeCoefficients = np.polyfit(run[0][negatives[0]:negatives[1]],run[6][negatives[0]:negatives[1]],2)
 		print 'Negative coefficients: ' + str(negativeCoefficients)
 		negativeSpace = np.linspace(ax.get_xlim()[0],0.0)
 		negativeValues = [ negativeCoefficients[0]*(x**2) + negativeCoefficients[1]*x + negativeCoefficients[2] for x in negativeSpace ]
-		ax.plot(negativeSpace,negativeValues,'r-')
+		ax.plot(negativeSpace,np.multiply(1e3,negativeValues),'r-')
 	
-	ax.set_title('n-type Ge, I=' + str(run[2][0])[:6] + 'A')
+	#ax.set_title('n-type Ge, I=' + str(run[2][0])[:6] + 'A')
 	ax.set_xlabel('B /T')
-	ax.set_ylabel('Hall Voltage /V')
+	ax.set_ylabel('V /mV')
 	print 'Max error: ' + str(max(run[7]))
 	ax.grid()
-	fig.savefig(str(outputFolder) + 'nTypeGe_' + str(run[2][0]) + '.pdf')
+	fig.savefig(str(outputFolder) + 'nTypeGe_' + str(run[2][0]).replace('.','_') + '.pdf')
 
 
 runCoefficientsList = []
@@ -403,12 +403,12 @@ for run in tungstenRuns:
 		negativeValues = [ y*1e6 for y in [ negativeCoefficients[0]*(x**2) + negativeCoefficients[1]*x + negativeCoefficients[2] for x in negativeSpace ] ]
 		ax.plot(negativeSpace,negativeValues,'r-')
 	
-	ax.set_title('Tungsten, B=' + str(run[0][0])[:6] + 'T')
+	#ax.set_title('Tungsten, B=' + str(run[0][0])[:6] + 'T')
 	ax.set_xlabel('I /A')
-	ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
+	ax.set_ylabel(r'V /\SI{}{\micro\volt}')
 	print 'Max error: ' + str(max(run[7]))
 	ax.grid()
-	fig.savefig(str(outputFolder) + 'tungsten_' + str(run[0][0]) + '.pdf')
+	fig.savefig(str(outputFolder) + 'tungsten_' + str(run[0][0]).replace('.','_') + '.pdf')
 
 runCoefficientsList = []
 runCoefficientErrorsList = []
@@ -496,12 +496,12 @@ for run in silverRuns:
 		negativeValues = [ s*1e6 for s in [ negativeCoefficients[0]*(x**2) + negativeCoefficients[1]*x + negativeCoefficients[2] for x in negativeSpace ] ]
 		ax.plot(negativeSpace,negativeValues,'r-')
 	
-	ax.set_title('Silver, B=' + str(run[0][0])[:6] + 'T')
+	#ax.set_title('Silver, B=' + str(run[0][0])[:6] + 'T')
 	ax.set_xlabel('I /A')
-	ax.set_ylabel(r'Hall Voltage /\SI{}{\micro\volt}')
+	ax.set_ylabel(r'V /\SI{}{\micro\volt}')
 	print 'Max error: ' + str(max(run[7]))
 	ax.grid()
-	fig.savefig(str(outputFolder) + 'silver_' + str(run[0][0]) + '.pdf')
+	fig.savefig(str(outputFolder) + 'silver_' + str(run[0][0]).replace('.','_') + '.pdf')
 
 '''
 nTypeGeRuns = findRuns(nTypeGe[2],nTypeGe[3])

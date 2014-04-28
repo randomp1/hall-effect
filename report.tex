@@ -1,7 +1,9 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 \usepackage{amsmath}
 \usepackage{siunitx}
 \usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 % Define superscript citation command
 \newcommand{\supercite}[1]{\textsuperscript{\cite{#1}}}
@@ -13,51 +15,51 @@
 \begin{document}
 	\maketitle
 	\begin{abstract}
-		The Hall constant of four different materials was measured: silver, tungsten, p-type and n-type germanium. This was achieved via the elimination of systematic errors caused by various effects. The constant was found to have values of $7.4\times10^{-11}\SI{}{\cubic\metre\per\coulomb}$, blah, $-6.9\times10^{-3}\SI{}{\cubic\metre\per\coulomb}$ and blah respectively. 
+		The Hall constant of four different materials was measured: silver, tungsten, p-type and n-type germanium. This was achieved via the elimination of systematic errors caused by various effects. The constant for these materials was found to have values of $-7.4\pm3.7\times 10^{-11}$\SI{}{\cubic\metre\per\coulomb}, $1.1\pm1.7\times 10^{-10}$\SI{}{\cubic\metre\per\coulomb}, $6.9\pm0.3\times 10^{-3}$\SI{}{\cubic\metre\per\coulomb} and $-11.3\pm0.3\times 10^{-3}$\SI{}{\cubic\metre\per\coulomb} respectively, demonstrating the presence of positive charge carriers in n-type Ge and tungsten and negative charge carriers in p-type Ge and silver.
 	\end{abstract}
 	
 	
 	\section{Introduction}
-		The Hall effect is the deviation in the path of an electrical current in a conductor due to an externally imposed magnetic field, resulting in a voltage across the material. It was first discovered by Edwin Hall in 1879, notably before the discovery of the electron in 1897 or indeed quantum mechanical models of the behaviour of electrons in solids. Since then it has proved extremely useful and has been used to measure the strength of magnetic fields and of the type and density of the electrical charge carriers in materials (especially semiconductors).
+		The Hall effect is the deviation in path of an electrical current due to an externally imposed magnetic field, which produces a voltage across the material. It was first discovered by Edwin Hall in 1879\supercite{hallPaper} - notably before the discovery of the electron in 1897 or indeed the advent of quantum mechanical models of the behaviour of electrons in solids. Since then it has proved extremely useful and is used to measure the strength of magnetic fields in addition to the type and density of electrical charge carriers in materials (especially semiconductors).
 		
 		In this experiment we sought to measure the constant of proportionality relating the Hall voltage and the magnetic field strength and current (the Hall constant) for four materials: silver, tungsten, p-type germanium and n-type germanium. To perform this accurately, various systematic errors needed to be removed, caused by effects described below.
 		
 	\section{Theoretical Considerations}
-		The Hall effect can be quantified by considering a rectangular block of material of thickness $t$ and width $w$ which is positioned such that its length and width are in the $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}}$ directions respectively. If a current is passed through the material in the $\hat{\mathbf{x}}$ direction and a magnetic field is imposed in the $\hat{\mathbf{z}}$ direction, then the charge carriers will experience a force causing them to move to one side of the material. This results in a build up of charge and so an opposing electric field which results in a voltage being produced across the width of the material in the $\hat{\mathbf{y}}$ direction that balances the force due to the magnetic field. With the assumption that the charge carriers conduct in the material according to the Drude model, the following equation is obtained:
+		The Hall effect can be quantified by considering a rectangular block of material, thickness $t$ and width $w$ which is positioned such that its length and width are in the $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}}$ directions respectively. If a current is passed through it in the $\hat{\mathbf{x}}$ direction and a magnetic field is imposed in the $\hat{\mathbf{z}}$ direction, the charge carriers will experience a force causing them to move to one side of the material. This produces a build up of charge and thus an opposing electrical potential across the width of the material in the $\hat{\mathbf{y}}$ direction that balances the force from the magnetic field. With the assumption that charge carriers conduct in the material according to the Drude model, the following equation is obtained:
 		
 		\begin{equation} \label{eq:hallEffect}
 			V_y = \frac{1}{nq}\frac{B_zI_x}{t}
 		\end{equation}
 		
-		\noindent The constant of proportionality that relates $V_y$ and $B_zI_x/t$ is known as the Hall coefficient, $R_H$ and in this case is:
+		\noindent The constant of proportionality relating $V_y$ and $B_zI_x/t$ is known as the Hall coefficient, $R_H$, and in this case is:
 		
-		\begin{equation}
+		\begin{equation} \label{eq:hallCoefficient}
 			R_H = \frac{1}{nq}
 		\end{equation}
 		
 		\noindent There are two important points when considering this expression:
 		
 		\begin{itemize}
-			\item The dominant charge carrier's polarity can be observed in the sign of $R_H$.
-			\item $R_H$ varies as the reciprocal of the number density of the dominant charge carrier - thus for small carrier densities a larger effect will be seen. This is of particular importance in measuring the dopant concentration in semiconductors.
+			\item The dominant charge carrier's polarity is indicated by the sign of $R_H$.
+			\item $R_H$ varies as the reciprocal of the dominant charge carrier's number density - for small carrier densities a larger effect is observed. This is useful for measuring the dopant concentration of semiconductors.
 		\end{itemize}
 		
-		In addition to the Hall effect there are several other effects which are present in this situation. These are the misalignment voltage along with the Ettingshausen, Nernst and Righi-Leduc effects:
+		In addition to the Hall effect there are several other effects present in this situation. These are the misalignment voltage and the Ettingshausen, Nernst and Righi-Leduc effects:
 		
 		\subsection{Misalignment Voltage}
-			The Misalignment voltage is produced as a result of the voltage probes not being placed on opposite sides of the material. Due to its electrical resistance, a voltage is measured between the two probes when a current is passed along the sample:
+			The Misalignment voltage is caused by the voltage probes not being placed on opposite sides of the material. Due to electrical resistance an additional voltage is measured between the two probes when a current is passed along the sample:
 			
 			\begin{equation}
 				V_M \propto I_x
 			\end{equation}
 		
 		\subsection{The Ettingshausen Effect}
-			The Ettingshausen effect produces a temperature gradient along the $\hat{\mathbf{y}}$ direction, this is quantified as\supercite{lindbergHall}:
+			This produces a temperature gradient along the $\hat{\mathbf{y}}$ direction, quantified as\supercite{lindbergHall}:
 			\begin{equation}
 				\Delta T \propto \frac{I_xB_z}{t}
 			\end{equation}
 			
-			\noindent The temperature difference in the $\hat{\mathbf{y}}$ direction will thus result in a thermocouple voltage at the probes. Since this is dependent on exactly the same quantities as the Hall effect, it is difficult to distinguish the two.
+			\noindent The temperature difference across the sample's width results in a thermocouple voltage between the probes. This is dependent on exactly the same quantities as the Hall effect, so it is difficult to distinguish the two.
 		
 		\subsection{The Nernst Effect}
 			This produces a potential difference across the width of the sample when a thermal current flows in the $\hat{\mathbf{x}}$ direction\supercite{lindbergHall}:
@@ -67,99 +69,435 @@
 			\begin{center} \emph{Where $w_x$ is thermal current density in the $\hat{\mathbf{x}}$ direction} \end{center}
 		
 		\subsection{The Righi-Leduc Effect}
-			This produces a temperature gradient in the $\hat{\mathbf{y}}$ direction caused by a thermal current in the $\hat{\mathbf{x}}$ direction combined with the magnetic field in the $\hat{\mathbf{z}}$ direction\supercite{lindbergHall}. As with the Ettingshausen effect, this will result in a thermocouple voltage across the sample:
+			This produces a temperature gradient in the $\hat{\mathbf{y}}$ direction caused by a thermal current in the $\hat{\mathbf{x}}$ direction and a magnetic field in the $\hat{\mathbf{z}}$ direction\supercite{lindbergHall}. As with the Ettingshausen effect, a thermocouple voltage is produced across the sample:
 			\begin{equation}
 				\Delta T \propto w_xB_zw
 			\end{equation}
 			\begin{center} \emph{Where as before $w_x$ is the thermal current density in the $\hat{\mathbf{x}}$ direction and $w$ is the width of the sample.} \end{center}
 		
-		With the exception of the Ettingshausen effect, it is thus possible to eliminate these effects by taking measurements in which either the current or the magnetic field is reversed. The combination of measurements required to do this is shown below\supercite{lindbergHall}:
+		With the exception of the Ettingshausen effect, it is possible to eliminate these effects by taking measurements in which either the current or magnetic field is reversed due to their parity in $I_x$ and $B_z$. The combination of measurements required is shown below\supercite{lindbergHall}:
 		
 		\begin{equation} \label{eq:removeErrors}
 			V_H(B,I) = \frac{V(+B,+I)-V(+B,-I)+V(-B,-I)-V(-B,+I)}{4}
 		\end{equation}
 		
 	\section{Experimental Method}
-		The samples were used of dimensions listed in table \ref{table:dimensions}, measured using a micrometer. The thickness of the sample is purposefully chosen to be small so as to increase the size of the measurement.
+		The samples were used of dimensions listed in table \ref{table:dimensions} in appendix \ref{sec:tables}, measured using a micrometer. The thickness of the sample is purposefully chosen small to increase the measured voltages.
 		
-		The samples were positioned between two large electromagnets which allowed control of the magnetic field by modifying the current flowing though them. The magnetic field in the region to be occupied by the sample was measured with a Hall probe and was found to be uniform to the extent measurable by the probe (resolution of 1mT), thus effects due to a non-uniform magnetic field could be discounted. It was not possible to measure the strength of the field in directions perpendicular to the $\hat{\mathbf{z}}$ direction defined previously, however it is expected that these fields would be small and ought to have a significantly smaller effect on the measured voltage.
+		The samples were positioned between two electromagnets allowing control of the magnetic field. The magnetic field in the region to be occupied by the sample was measured with a Hall probe and found to be uniform to the resolution of the probe (1mT), thus effects due to non-uniform magnetic field could be discounted. It was not possible to measure the strength of the field perpendicular to the $\hat{\mathbf{z}}$ direction defined previously, however it is expected that these fields would be small and ought to have a significantly smaller effect on the measured voltage.
 		
-		In order to control thermal effects a fan and a thermocouple attached to each sample was used to attempt to monitor and control the temperature of the samples during measurements. This could only be done to prevent heating greater than 5 K. In addition, when current was being varied, random values were chosen so as to prevent the current systematically being kept high and thus cumulatively heating the sample. This was particularly important for the metal samples which were subjected to much higher currents and experienced larger amounts of heating. A further consideration was the heating of the coils, which became a significant factor for large magnetic fields as large currents were put through them to achieve this. The coils were thus cooled by a further two fans.
+		To control thermal effects, a fan and thermocouple attached to each sample was used to monitor and control the temperature of the samples during measurements. This could only prevent heating greater than 5 K. In addition when current was being varied, random values were chosen to prevent the current systematically being kept high and causing cumulative heating. This was particularly important for the metal samples which were subjected to much higher currents and experienced greater heating. A further consideration was the heating of the coils, which became a significant factor for large magnetic fields due to the large currents required. The coils were thus cooled by a further two fans.
 		
-		At each point sampled from the current-magnetic field parameter space, measurements were made of the current, magnetic field, voltage across the width of the sample and temperature. The latter was taken using a thermocouple attached to the center of the by holding one of the independent variables fixed and varying the other. For the two semiconductor samples, the current through the sample was held constant and the magnetic field varied, whereas the opposite was done for the metal samples. This was decided in particular for the metals to allow for greater control over the heating as previously described.
+		At each point sampled from current-magnetic field parameter space, measurements were made of the current, magnetic field, voltage across the width of the sample and temperature. For the two semiconductor samples, the current through the sample was held constant and the magnetic field varied, whereas the opposite was done for the metal samples. This was decided in particular for the metals to reduce sustained heating.
 	
 	\section{Data Analysis}
-		The data recorded is sampled from a parameter space $(I_x,B_z)$ and consists of runs in which one of the two variables is held constant whilst the other is varied. For the following discussion, the variable held constant is referred to as $Y$ and the varied quantity as $X$. For each run with $Y = Y_i$, a run was performed for $Y = -Y_i$ so as to allow combining these data as described in equation \ref{eq:removeErrors}. However, the $X$ values selected were not necessarily symmetric about zero and the values chosen were different for different $Y$, which necessitated finding some way of combining these different values of $X$.
+		The data recorded is sampled from $(I_x,B_z)$ parameter space and consists of runs in which one of the variables is held constant whilst the other is varied. For the following discussion, the variable held constant is referred to as $Y$ and the varied quantity as $X$. For each run with $Y$ a run was performed for $-Y$ so as to allow combining these data as described in equation \ref{eq:removeErrors}. However the $X$ values selected were not necessarily symmetric about zero and were different for different runs $i$, necessitating some method of combining these assymetric values of $X$.
 		
-		To begin with, the runs were separated into series containing $X$ and $Y_i$ of fixed sign - e.g. all $X>0$ and $Y_i<0$ or all $X>0$ and $Y_i>0$. These different series were then transformed so as to make equation \ref{eq:removeErrors} the arithmetic mean. This is done using these transformations:
-		\[Y'_i = |Y_i| \qquad X' = |X| \qquad V' = V\frac{XY_i}{|XY_i|}\]
+		To do this each run was separated into two series containing $X$ of fixed sign - e.g. all $X>0$ or all $X>0$. These different series were then transformed so as to make equation \ref{eq:removeErrors} the arithmetic mean. This is done using these transformations:
+		\[Y' = |Y| \qquad X' = |X| \qquad V' = V\frac{XY}{|XY|}\]
 		
-		A quadratic was then fitted to each series to allow each of the series to be summarised by its set of coefficients, $\boldsymbol{\beta}_i$. This has the benefit of smoothing out statistical noise, however it is possible that information of importance is also eliminated, or indeed that the quadratics introduce false trends into the data. To mitigate these concerns, the quality of the fit with all series measured was carefully scrutinised. However it was clear from the results that the quadratic fits appear to model the data extremely closely, justifying their use. To retain information about the statistical variation of the data, the maximum error in the voltage measured per series was retained to indicate the confidence limits of its quadratic fit ($\sigma_i$). In other words the error on each point on the curve is $\sigma_i$:
+		A quadratic was then fitted to each series $i$ to allow each to be summarised by a vector of coefficients, $\boldsymbol{\beta}_i$. This has the benefit of smoothing out statistical noise, however it is possible that information of importance is also eliminated or indeed that the quadratics introduce false trends into the data. To mitigate these concerns, the quality of the fit with all series measured was carefully monitored. It was clear from the results that the quadratic fits appeared to model the data extremely closely justifying their use. To retain information about the statistical variation of the data, the maximum error in the voltage measured in each series was retained to indicate the confidence limits of its quadratic fit ($\sigma_i$). In other words the error at each point on the curve is $\sigma_i$:
 		
 		\begin{equation}
 			V(X',Y'_i) = \begin{pmatrix}X^{\prime2} & X' & 1\end{pmatrix}\cdot\boldsymbol{\beta}_i \pm \sigma_i
 		\end{equation}
 		
-		Following this, the quadratic fits with the same values of $Y'_i$ were grouped and combined to eliminate their individual systematic errors by taking the arithmetic mean of their coefficient vectors. This gives a reduced set of corrected quadratic coefficients, $\boldsymbol{\beta}^\mu_j$. This is possible as the quadratic fits are linear in their coefficients and the transformation performed above ensures that they are combined as required by equation \ref{eq:removeErrors}. In addition, their respective errors were combined using the standard error propagation formula for a linear weighted sum to give $\sigma^\mu_j$.
+		Following this, quadratic fits with the same value of $Y'_i$ were grouped and combined to eliminate their individual systematic errors by taking the mean of their coefficient vectors giving a reduced set of corrected quadratic coefficients, $\boldsymbol{\beta}^\mu_j$. This is possible as the quadratic equation is linear in the coefficients, whilst the transformation above ensures that equation \ref{eq:removeErrors} is simply the mean. In addition, their respective errors were combined using the standard error propagation formula for a linear weighted sum to give $\sigma^\mu_j$.
 		
-		At this stage we are able to compare our corrected data against the theoretical form of the Hall voltage in equation \ref{eq:hallEffect}. This is accomplished by integrating the squared difference between the theoretical and observed curves whilst weighting relative to the error of the quadratic under consideration. This is essentially based on converting the the reduced Chi-squared statistic to act on continuous rather than discrete data points:
+		At this stage we have hopefully eliminated the systematic errors from the data and may compare it against the theoretical Hall voltage - equation \ref{eq:hallEffect}. This is accomplished by integrating the squared difference between the theoretical and observed curves weighted according to the error of the quadratic under consideration. This is essentially based on converting the the reduced Chi-squared statistic to act on continuous rather than discrete data points:
 		
 		\begin{equation}
 			\chi^2_{\textrm{discrete}} = \frac{1}{N}\sum_{i=0}^{i=N}\frac{(O_i-E_i)^2}{\sigma_i^2} \rightarrow \chi^2_{\textrm{cont.}} = \frac{1}{x_1-x_0}\int_{x_0}^{x_1}\frac{(O(x)-E(x))^2}{\sigma(x)^2}
 		\end{equation}
 		
 		\noindent Thus our goodness of fit measure $G$ is:
-		\begin{equation}
+		\begin{equation} \label{eq:fitness}
 			G\left(\frac{R_H}{t}\right) = \frac{1}{N}\sum_j\frac{1}{X^{\prime \textrm{max}}_j}\int_{0}^{X^{\prime \textrm{max}}_j}\frac{1}{(\sigma^\mu_j)^2}\left[\begin{pmatrix}X^{\prime2} \\ X' \\ 1\end{pmatrix}^\mathrm{T}\cdot\boldsymbol{\beta}^\mu_j - \frac{R_HXY'_j}{t}\right]^2 dX
 		\end{equation}
 		\begin{center} \emph{Where $N$ is the number of corrected quadratic coefficient vectors we have and $X^{\prime \textrm{max}}_j$ is the maximum value of $X'$ recorded in the original data that went into corrected quadratic $j$.} \end{center}
 		
-		We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. The minimization was performed numerically using the Nelder-Mead method operating in log space via the functions $\mathcal{G_+}(R'_H/t') = \log(G(\log(R_H/t))$ and $\mathcal{G_-}(R'_H/t') = \log(G(-\log(R_H/t))$. This was done as $R_H/t$ spans many orders of magnitude for different materials and the minimisation function often missed out the minimum when $R_H/t$ was particularly small.
+		We can now determine the best fitting value of $R_H$ by minimizing the function $G(R_H)$. This was performed numerically using the Nelder-Mead method in log space via the functions $\mathcal{G_+}(R'_H/t') = \log(G(\log(R_H/t))$ and $\mathcal{G_-}(R'_H/t') = \log(G(-\log(R_H/t))$ since $R_H/t$ spans many orders of magnitude depending on the material and the minimisation algorithm often missed minima when $R_H/t$ was particularly small.
 	
 	\section{Results and Discussion}
 		\subsection{Raw Data}
-			As described in the previous section, the data was taken in a series of 'runs'. These are plotted for the different materials in figure blah along with the quadratic fits previously described.
+			As described in the previous section, measurements were taken in a series of 'runs'. These are plotted for the different materials and are found in appendix \ref{sec:additionalFigures} with their quadratic fits.
 			
-			The semiconductor samples both exhibit a strong Hall effect, with the voltage recorded in the mV range. The curves for the two materials can be seen to have opposite gradients for the the same regions of parameter space, indicating that as expected the dominant charge carriers in the two materials have different polarity. Furthermore, for both of these materials the data follows a virtually perfect linear relationship with the current. However, in the case of the p-type sample a slight amount of curvature is visible for larger currents. Notably, this perturbation to the linear relationship changes sign when either of the the magnetic field or the current are reversed. This means it will not be removed by our elimination procedure and could therefore be due to the Ettingshausen effect which also has this property.
+			The semiconductor samples exhibit a strong Hall effect, with voltages recorded in the mV range. The curves for the two materials have opposite gradients for the the same regions of parameter space, indicating that as expected the dominant charge carriers have different polarity. Furthermore, for these materials the data follows a virtually perfect linear relationship with the current. However, in the case of the p-type sample a slight amount of curvature is visible for larger currents. Notably, this perturbation to the linear relationship changes sign when either of the the magnetic field or the current are reversed meaning it will not be removed by our elimination procedure and could therefore be due to the Ettingshausen effect which also has this property.
 			
-			The metal samples on the other hand produced extremely small voltages on the order of 10-100\SI{}{\micro\volt}. In addition, the large currents passed through them (up to 10A) resulted in significant amounts of heating, particularly in the case of the tungsten sample. For the silver samples there appears to be a very good linear fit to the data, however unlike the semiconductor samples, the sign of the voltage measured does not reverse when the sign of the magnetic field changes. This would appear to indicate that a large portion of the signal measured here is not in fact due to the Hall effect, and will be removed by the elimination procedure. In the case of the tungsten sample a similar effect was seen, in addition to large amounts of curvature when the magnetic field was negative. Interestingly this amount of curvature was not observed when the magnetic field was positive. Since this does not seem to fit with any of the systematic errors expected, it is possible that it is due to some further systematic error such as inadequately controlled temperature during particular series of measurements. Indeed the temperatures recorded for negative fields were in general lower than those measured for positive fields (approx in the ranges 23\degree C-25\degree C vs. 24\degree C-27\degree C respectively).
+			The metal samples on the other hand produced extremely small voltages of 10-100\SI{}{\micro\volt}. In addition, the large currents passed through them (up to 10A) resulted in significant amounts of heating, particularly in the case of the tungsten sample. For the silver samples there appears to be a very good linear fit to the data, however unlike the semiconductor samples, the sign of the voltage measured does not reverse when the sign of the magnetic field changes. This would appear to indicate that a large portion of the signal measured here is not in fact due to the Hall effect and will be removed by the elimination procedure. This was also seen for the tungsten sample in addition to large amounts of curvature when the magnetic field was negative. Interestingly this amount of curvature was not observed for positive magnetic fields. Since this is not consistent with the systematic errors expected, it must be due to further systematic error such as inadequately controlled temperature during particular series of measurements. Indeed the temperatures recorded for negative fields were in general lower than those measured for positive fields (approx in the ranges 23\degree C-25\degree C vs. 24\degree C-27\degree C respectively).
 		
 		\subsection{Combined Data}
-			After the mean of the matching quadratics was taken, the results were plotted along with the best-fitting Hall effect curve, as calculated by the fitting procedure described above. These are shown in figure BLAH BLAH BLAH BLAH. For all of these plots the combined quadratic is shown in blue, and the confidence limits are indicated by the dashed grey lines enclosing the shaded yellow area. The best fitting Hall effect curve is plotted in green.
+			After the mean of the matching quadratics was taken, the results were plotted along with the best-fitting Hall effect curve, calculated with the fitting procedure described above. These are shown in figures \ref{fig:semiconductorCorrected}, \ref{fig:silverCorrected} and \ref{fig:tungstenCorrected}. For all plots the combined quadratic is shown in blue, and confidence limits indicated by the dashed grey lines enclosing the shaded yellow area. The best fitting Hall effect curve is plotted in green.
+			
+			\begin{figure}[b!]
+				\centering
+				\begin{tabular}{c|c}
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/p-type_Ge_corrected_0_0150.pdf}
+						\caption{p-type, I=15mA}
+						\label{fig:pTypeCorrected15}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/n-type_Ge_corrected_0_0150.pdf}
+						\caption{n-type, I=15mA}
+						\label{fig:nTypeCorrected15}
+					\end{subfigure}
+					\\
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/p-type_Ge_corrected_0_0300.pdf}
+						\caption{p-type, I=30mA}
+						\label{fig:pTypeCorrected30}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/n-type_Ge_corrected_0_0150.pdf}
+						\caption{n-type, I=30mA}
+						\label{fig:nTypeCorrected30}
+					\end{subfigure}
+				\end{tabular}
+				\caption{Corrected quadratics (blue) representing data for germanium samples with confidence limits denoted by shaded yellow regions (not visible due to small magnitude of errors). Best fitting theoretical Hall effect curve plotted in green, showing an excellent fit. p-type Ge curves both exhibit noticeable curvature - not as apparent in n-type plots.}
+				\label{fig:semiconductorCorrected}
+			\end{figure}
+			
+			\begin{figure}[p]
+				\centering
+				\begin{tabular}{c|c}
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Silver_corrected_0_06.pdf}
+						\caption{B=60mT}
+						\label{fig:silverCorrected60}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Silver_corrected_0_13.pdf}
+						\caption{B=130mT}
+						\label{fig:silverCorrected130}
+					\end{subfigure}
+					\\
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Silver_corrected_0_2.pdf}
+						\caption{B=200mT}
+						\label{fig:silverCorrected200}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Silver_corrected_0_2575.pdf}
+						\caption{B=260mT}
+						\label{fig:silverCorrected260}
+					\end{subfigure}
+				\end{tabular}
+				\caption{Corrected quadratics (blue) representing data for silver samples with confidence limits denoted by shaded yellow regions. Best fitting theoretical Hall effect curve plotted in green indicates a generally reasonable fit. All curves exhibit strong curvature.}
+				\label{fig:silverCorrected}
+			\end{figure}
+			
+			\begin{figure}[p]
+				\centering
+				\begin{tabular}{c c}
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Tungsten_corrected_0_06.pdf}
+						\caption{B=60mT}
+						\label{fig:tungstenCorrected60}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./correctedGraphs/Tungsten_corrected_0_13.pdf}
+						\caption{B=130mT}
+						\label{fig:tungstenCorrected130}
+					\end{subfigure}	
+				\end{tabular}
+				\begin{subfigure}[t]{0.45\textwidth}
+					\centering
+					\includegraphics[width=\textwidth]{./correctedGraphs/Tungsten_corrected_0_2.pdf}
+					\caption{B=200mT}
+					\label{fig:tungstenCorrected200}
+				\end{subfigure}
+				
+				\caption{Corrected quadratics (blue) representing data for tungsten samples with confidence limits denoted by shaded yellow regions. Best fitting theoretical Hall effect curve plotted in green indicates relatively poor fit. Curves are generally linear but indicate that $\frac{\partial V}{\partial B}$ is significantly different to theoretical fit.}
+				\label{fig:tungstenCorrected}
+			\end{figure}
 			
 			For both semiconductors, it is clear that the combined quadratics make a good fit with the hall effect model. Both combined quadratics display a small offset from zero and also a slight amount of curvature - with the curvature more promiment in the case of the p-type conductor as predicted.
 			
-			The corrected quadratics of the metals display large amounts of curvature and also have reasonably large offsets from zero. As predicted the hall voltage extracted from the silver data is very small, and of comparable size with that produced from the tungsten data. Furthermore, with some of the systematic errors removed the silver sample appears to have a greater curvature than that shown by the corrected quadratics for tungsten. This would suggest that the silver samples are exposed to a stronger systematic error. A rough agreement is generally observed between the quadratics representing the data and the theoretical Hall voltage.
-		
+			The corrected quadratics of the metals display large amounts of curvature and also have relatively large zero offsets. As predicted the Hall voltage extracted from the silver data is very small, of comparable size with that produced from the tungsten data. Furthermore, with some of the systematic errors removed the silver sample appears to have a greater curvature than that shown by the corrected quadratics for tungsten. This would suggest that the silver samples are exposed to a stronger systematic error. A rough agreement is generally observed between the quadratics representing the data and the theoretical Hall voltage.
+			
 		\subsection{Goodness of Fit of Theoretical Hall Voltage}
-			The value of the function $G(R_H/t)$ defined previously was calculated for a range of values including that of the best fit, this is plotted in figure blah blah. A red point is plotted at the position calculated by the minimisation routine of the best fitting value of $R_H/t$.
+			The value of the goodness of fit function $G(R_H/t)$ was plotted in figure \ref{fig:fitnessGraphs}. A red point is plotted at the position calculated by the minimisation routine of the best fitting value of $R_H/t$.
+			
+			\begin{figure}[t]
+				\centering
+				\begin{tabular}{c|c}
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./fitnessGraphs/p-type_Ge_errors.pdf}
+						\caption{p-type germanium}
+						\label{fig:pTypeGeErrors}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./fitnessGraphs/n-type_Ge_errors.pdf}
+						\caption{n-type germanium}
+						\label{fig:nTypeGeErrors}
+					\end{subfigure}
+					\\
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./fitnessGraphs/Tungsten_errors.pdf}
+						\caption{Tungsten}
+						\label{fig:tungstenErrors}
+					\end{subfigure}
+					&
+					\begin{subfigure}[t]{0.45\textwidth}
+						\centering
+						\includegraphics[width=\textwidth]{./fitnessGraphs/Silver_errors.pdf}
+						\caption{Silver}
+						\label{fig:silverErrors}
+					\end{subfigure}
+				\end{tabular}
+				\caption{Goodness of fit, $G$ (see eq. \ref{eq:fitness}) vs. $R_H$ of quadratics representing data with theoretical Hall voltage for different materials (blue curves). Best fitting value marked by red dot, point at which curve offset from this by half an order of magnitude marked by black lines - this is used to define error in best fitting $R_H$.}
+				\label{fig:fitnessGraphs}
+			\end{figure}
 			
 			The value of $G(R_H/t)$ for the best fitting values of $R_H/t$ is generally found to be on the order of 1, indicating a reasonably good fit, however despite the p-type and n-type data producing generally better fits the statistic is in fact worse for them than for the metals. This is largely a result of the very small relative errors which were listed for the semiconductor measured voltages, by comparison to the large relative errors for the metal samples. Since the errors assigned are not likely to be good estimators of the standard deviation (other than as an order of magnitude estimate) this result is probably not meaningful.
 			
-			What is perhaps more meaningful is the shape of the graphs in the vicinity of the errors. In particular, the semiconductor graphs have generally a 'sharper' minimum than the minima found in the graphs for the metals. This can be considered analogous to measuring how close points $x$ on a straight line come to a point, where $x=0$ is the position on the line where it makes its closest approach to the point and $r_0$ is their separation at $x=0$. The separation at position $x$ is thus $r=\sqrt{r_0^2+x^2}$, with $r_0$ controlling how 'sharp' the curve $r(x)$ is. Similarly the sharpness of the minima on the error curves give a further indication of how close the theoretical hall voltage comes to the data. Considering the log scale shown on the goodness of fit plots, the semiconductors clearly fit the data significantly more closely than the metals.
+			What is perhaps more meaningful is the shape of the graphs in the vicinity of the errors. This can be considered analogous to measuring how close points $x$ on a straight line come to a point, where $x=0$ is the position on the line where it makes its closest approach to the point and $r_0$ is their separation at $x=0$. The separation at position $x$ is thus $r=\sqrt{r_0^2+x^2}$, with $r_0$ controlling how `sharp' the curve $r(x)$ is. Similarly the sharpness of the minima on the error curves give a further indication of how close the theoretical hall voltage comes to the data. Thus the semiconductors appear to fit the data significantly more closely than the metals. We can estimate the error in the measurement by finding the value of $R_H/t$ for which the integrated error curve is offset by a certain amount from the minimum. This offset was set at 0.5 in log space and its position is marked by the vertical and horizontal black lines on each plot. The values of $R_H$, $n$ (from eqn. \ref{eq:hallCoefficient}) and associated errors are thus:
+			
+			\begin{table}[h!]
+				\begin{center}
+					\begin{tabular}{|l|r|r|r|r|}
+					\hline
+					Material  & $R_H$ /\SI{}{\cubic\metre\per\coulomb} & $\sigma_{R_H}$ /\SI{}{\cubic\metre\per\coulomb} &  $n=|eR_H|^{-1}$ /\SI{}{\per\cubic\metre} & $\sigma_n$ /\SI{}{\per\cubic\metre} \\ \hline
+					Silver    & $-7.4\times 10^{-11}$ & $3.7\times 10^{-11}$ & $8\times 10^{28}$ & $4\times 10^{19}$ \\
+					Tungsten  & $1.1\times 10^{-10}$ & $1.7\times 10^{-10}$ & $6\times 10^{28}$ & $8\times 10^{28}$ \\
+					p-type Ge & $6.9\times 10^{-3}$ & $0.3\times 10^{-3}$ & $90\times 10^{19}$ & $4\times 10^{19}$ \\
+					n-type Ge & $-11.3\times 10^{-3}$ & $0.3\times 10^{-3}$ & $55\times 10^{19}$ & $1\times 10^{19}$ \\ \hline	
+					\end{tabular}
+				\end{center}
+				\label{table:hallConstants}
+			\end{table}
+			
+			\noindent From these results it is clear that firstly the silver and the n-type germanium illustrate that their dominant charge carriers are negative (electrons), whilst the p-type sample and tungsten samples' dominant charge carriers are positive (holes). In addition, the metals have a significantly smaller Hall coefficient and thus much greater charge carrier density than the germanium samples - given that metals are conductors and germanium is a semiconductor this is no surprise. Finally, the charge carrier number density for the silver sample was found to be greater than that for the tunsten sample. This is also expected as silver is known to be a very good conductor whereas tungsten is a poor one and conductivity is directly proportional to the carrier density.
 	
 	\section{Conclusion}
-	
+		To conclude, we have measured the Hall coefficients of silver, tungsten, p-type and n-type germanium. From these it was shown that electric currents are carried by electons in n-doped germanium and silver, whilst in p-doped germanium and tungsten they are carried by holes. To accomplish this measurement, systematic errors from various effects were eliminated using a method of combining data symmetric in one independent variable and randomly chosen in the other. This was based on fitting of quadratic curves which were found to fit very well to the data obtained.
 	
 	\newpage
 	\appendix
-	\section{Appendix}
+	\section{Additional Figures} \label{sec:additionalFigures}
 	
-	\begin{table}[h!]
+	\begin{figure}[h!]
+		\centering
+		\begin{tabular}{c|c}
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/nTypeGe_-0_01502.pdf}
+				\caption{I=-15mA}
+				\label{fig:nTypeRawGraph-15mA}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/nTypeGe_0_015023.pdf}
+				\caption{I=15mA}
+				\label{fig:nTypeRawGraph15mA}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/nTypeGe_-0_030032.pdf}
+				\caption{I=-30mA}
+				\label{fig:nTypeRawGraph-30mA}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/nTypeGe_0_030036.pdf}
+				\caption{I=30mA}
+				\label{fig:nTypeRawGraph30mA}
+			\end{subfigure}
+		\end{tabular}
+		\caption{n-type Ge raw data (blue dots) with quadratic fits (red and green lines). Data almost perfectly linear, fits are thus extremely good.}
+		\label{fig:nTypeRawGraphs}
+	\end{figure}
+	
+	\begin{figure}[h!]
+		\centering
+		\begin{tabular}{c|c}
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/pTypeGe_-0_015026.pdf}
+				\caption{I=-15mA}
+				\label{fig:pTypeRawGraph-15mA}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/pTypeGe_0_015023.pdf}
+				\caption{I=15mA}
+				\label{fig:pTypeRawGraph15mA}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/pTypeGe_-0_030039.pdf}
+				\caption{I=-30mA}
+				\label{fig:pTypeRawGraph-30mA}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/pTypeGe_0_030041.pdf}
+				\caption{I=30mA}
+				\label{fig:pTypeRawGraph30mA}
+			\end{subfigure}
+		\end{tabular}
+		\caption{p-type Ge raw data (blue dots) with quadratic fits (red and green lines). Data almost perfectly linear with slight curvature which is extremely well modelled by quadratic fits.}
+		\label{fig:pTypeRawGraphs}
+	\end{figure}
+	
+	\begin{figure}[h]
+		\centering
+		\begin{tabular}{c|c}
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_-0_06.pdf}
+				\caption{B=-60mT}
+				\label{fig:silverRawGraph-60mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_0_06.pdf}
+				\caption{B=60mT}
+				\label{fig:silverRawGraph60mT}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_-0_13.pdf}
+				\caption{B=-130mT}
+				\label{fig:silverRawGraph-130mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_0_13.pdf}
+				\caption{B=130mT}
+				\label{fig:silverRawGraph130mT}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_-0_2.pdf}
+				\caption{B=-200mT}
+				\label{fig:silverRawGraph-200mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_0_2.pdf}
+				\caption{B=200mT}
+				\label{fig:silverRawGraph200mT}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_-0_253.pdf}
+				\caption{B=-253mT}
+				\label{fig:silverRawGraph-253mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/silver_0_26.pdf}
+				\caption{B=260mT}
+				\label{fig:silverRawGraph260mT}
+			\end{subfigure}
+		\end{tabular}
+		\caption{Silver raw data (blue dots) with quadratic fits (red and green lines). Data almost perfectly linear, almost perfectly modelled by the quadratics}
+		\label{fig:silverRawGraphs}
+	\end{figure}
+	
+	\begin{figure}[h]
+		\centering
+		\begin{tabular}{c|c}
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_-0_06.pdf}
+				\caption{B=-60mT}
+				\label{fig:tungstenRawGraph-60mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_0_06.pdf}
+				\caption{B=60mT}
+				\label{fig:tungstenRawGraph60mT}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_-0_13.pdf}
+				\caption{B=-130mT}
+				\label{fig:tungstenRawGraph-130mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_0_13.pdf}
+				\caption{B=130mT}
+				\label{fig:tungstenRawGraph130mT}
+			\end{subfigure}
+			\\
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_-0_2.pdf}
+				\caption{B=-200mT}
+				\label{fig:tungstenRawGraph-200mT}
+			\end{subfigure}
+			&
+			\begin{subfigure}[t]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{./graphs_raw/tungsten_0_2.pdf}
+				\caption{B=200mT}
+				\label{fig:tungstenRawGraph200mT}
+			\end{subfigure}
+		\end{tabular}
+		\caption{Tungsten raw data (blue dots) with quadratic fits (red and green lines). Data for negative $B$ displays high degree of curvature which is very well modelled by the fits. In contrast data for positive $B$ displays almost no curvature and is again modelled well by the fits.}
+		\label{fig:tunstenRawGraphs}
+	\end{figure}
+	
+	\clearpage
+	\newpage
+	\section{Tables} \label{sec:tables}
+	
+	\begin{table}[h]
 		\begin{center}
 			\begin{tabular}{|l|r|r|r|} 
 			\hline
 			Material  & Thickness /mm & Width /mm    & Length /mm   \\ \hline
 			Silver    & $0.05$        & $20.0\pm0.5$ & $67.0\pm0.5$ \\
 			Tungsten  & $0.05$        & $20.0\pm0.5$ & $67.0\pm0.5$ \\
-			p-type Ge & $1.0\pm0.5$   & $5.0\pm0.5$      & $10.0\pm0.5$ \\
-			n-type Ge & $1.0\pm0.5$   & $5.0\pm0.5$      & $10.0\pm0.5$ \\ \hline	
+			p-type Ge & $1.0$         & $5.0\pm0.5$      & $10.0\pm0.5$ \\
+			n-type Ge & $1.0$         & $5.0\pm0.5$      & $10.0\pm0.5$ \\ \hline	
 			\end{tabular}
 		\end{center}
 		\caption{Dimensions of the materials examined}
 		\label{table:dimensions}
 	\end{table}
 	
+	\clearpage
 	\newpage
 	\begin{thebibliography}{9}
 		\bibitem{hallPaper}
